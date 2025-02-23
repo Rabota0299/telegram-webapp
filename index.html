@@ -25,11 +25,18 @@
       flex-direction: column;
       justify-content: flex-start;
     }
-    /* Стили для блока входа: текст делаем жирным и черным, без фонового цвета */
-    #loginForm h2, 
+    /* Стиль для блока входа – он теперь является flex-контейнером */
+    #loginForm {
+      display: flex;
+      flex-direction: column;
+      /* Желательно задать минимальную высоту, чтобы текст остался наверху, а поля ввода – внизу */
+      min-height: 150px;
+    }
+    /* Текст в блоке входа – делаем жирным и черным */
+    #loginForm h2,
     #loginForm p {
-      font-weight: bold;
-      color: #000; /* черный цвет */
+      font-weight: bold !important;
+      color: #000 !important;
       background: none;
       margin: 0.5em 0;
     }
@@ -66,15 +73,12 @@
     .hidden {
       display: none;
     }
-    /* Прижимаем блок входа к нижней части страницы */
-    #loginForm {
-      margin-top: auto;
-    }
-    /* Стили для PIN-кода: уменьшенные прямоугольные поля */
+    /* PIN-контейнер: внутри loginForm, поля прижимаются к низу */
     #pin-container {
       display: flex;
+      flex-direction: row;
       justify-content: center;
-      margin-top: 0.5cm;
+      margin-top: auto;
       margin-bottom: 20px;
     }
     #pin-container input {
@@ -99,8 +103,10 @@
   
   <!-- Форма для ввода PIN-кода (без кнопки "Войти") -->
   <div id="loginForm" class="hidden">
+    <!-- Этот заголовок остаётся наверху блока -->
     <h2>Карта Мародеров</h2>
     <p>Если торжественно клянешься что замышляешь только шалость - введи PINcode</p>
+    <!-- PIN-контейнер будет прижат к низу блока благодаря margin-top: auto -->
     <div id="pin-container">
       <input type="text" id="pin1" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin2')" />
       <input type="text" id="pin2" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin3')" onkeydown="handleBackspace(event, this, 'pin1')" />
@@ -124,11 +130,10 @@
   
   <script>
     let tg = window.Telegram.WebApp;
-    // Разрешённые Telegram ID (например, CEO и HEAD)
+    // Разрешённые Telegram ID
     const allowedUsers = [5817782470, 5907736789];
-    // Правильный PIN-код (массив строк)
+    // Правильный PIN-код
     const correctPIN = ["2", "4", "0", "2"];
-    // Получаем данные текущего пользователя из Telegram
     const currentUser = tg.initDataUnsafe.user;
     
     function showBlock(id) {
@@ -138,7 +143,6 @@
       document.getElementById(id).classList.add("hidden");
     }
     
-    // Проверка доступа по Telegram ID
     if (!currentUser || (allowedUsers.length && !allowedUsers.includes(currentUser.id))) {
       showBlock("accessDenied");
     } else {
@@ -146,8 +150,6 @@
       document.getElementById("username").innerText = `Привет, ${currentUser.first_name}!`;
     }
     
-    // Функция обработки ввода в PIN-поле: сохраняет цифру и заменяет её на эмодзи доллара.
-    // Если это последнее поле, автоматически вызывается проверка PIN.
     function handlePinInput(input, nextId) {
       let val = input.value;
       if (val.length > 0) {
@@ -161,7 +163,6 @@
       }
     }
     
-    // Функция обработки нажатия Backspace
     function handleBackspace(event, input, prevId) {
       if (event.key === "Backspace") {
         input.dataset.value = "";
@@ -172,7 +173,6 @@
       }
     }
     
-    // Функция проверки введённого PIN-кода
     function checkPin() {
       const pin1 = document.getElementById("pin1").dataset.value || "";
       const pin2 = document.getElementById("pin2").dataset.value || "";
@@ -193,7 +193,6 @@
       }
     }
     
-    // Функция отправки отчёта
     function sendReport(reportId) {
       alert(`Отчёт ${reportId} запущен!`);
       tg.sendData(JSON.stringify({ type: "report", reportId: reportId, userId: currentUser.id }));
