@@ -16,7 +16,6 @@
       font-family: 'MedievalSharp', cursive;
       text-align: center;
       padding: 20px;
-      /* Фоновое изображение */
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
       background-size: cover;
       color: #fff;
@@ -26,9 +25,16 @@
       flex-direction: column;
       justify-content: center;
     }
-    h1 {
-      font-size: 2.5em;
+    /* Блок приветствия вверху */
+    #greeting {
+      background: rgba(0, 0, 0, 0.7);
+      border: 2px solid #fff;
+      padding: 10px;
       margin-bottom: 20px;
+    }
+    #greeting h1 {
+      margin: 0;
+      font-size: 2.5em;
     }
     h2 {
       font-size: 2em;
@@ -59,10 +65,11 @@
     .hidden {
       display: none;
     }
-    /* Стили для PIN-кода: уменьшенные прямоугольные поля */
+    /* Стили для PIN-кода: уменьшенные прямоугольные поля, отступ 3cm сверху */
     #pin-container {
       display: flex;
       justify-content: center;
+      margin-top: 3cm;
       margin-bottom: 20px;
     }
     #pin-container input {
@@ -79,13 +86,18 @@
   </style>
 </head>
 <body>
+  <!-- Приветствие -->
+  <div id="greeting">
+    <h1>Добро пожаловать в мини-приложение!</h1>
+  </div>
+
   <!-- Блок с сообщением об отказе в доступе -->
   <div id="accessDenied" class="hidden">
     <h2>Доступ запрещён</h2>
     <p>Вы не авторизованы для использования этого мини-приложения.</p>
   </div>
   
-  <!-- Форма для ввода PIN-кода -->
+  <!-- Форма для ввода PIN-кода (без кнопки "Войти") -->
   <div id="loginForm" class="hidden">
     <h2>Карта Мародеров</h2>
     <p>Если торжественно клянешься что замышляешь только шалость - введи PINcode</p>
@@ -95,7 +107,6 @@
       <input type="text" id="pin3" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin4')" onkeydown="handleBackspace(event, this, 'pin2')" />
       <input type="text" id="pin4" maxlength="1" inputmode="numeric" pattern="[0-9]*" onkeydown="handleBackspace(event, this, 'pin3')" oninput="handlePinInput(this, '')" />
     </div>
-    <button onclick="checkPin()">Войти</button>
   </div>
   
   <!-- Основной интерфейс приложения -->
@@ -139,7 +150,8 @@
     }
     
     // Функция для обработки ввода в PIN-поле:
-    // При вводе цифры сохраняется значение в data-атрибуте и вместо цифры показывается эмодзи доллара
+    // При вводе цифры сохраняется значение в data-атрибуте и вместо цифры показывается эмодзи доллара.
+    // Если это последнее поле, сразу вызывается проверка PIN.
     function handlePinInput(input, nextId) {
       let val = input.value;
       if (val.length > 0) {
@@ -147,6 +159,9 @@
         input.value = "💲";
         if (nextId) {
           document.getElementById(nextId).focus();
+        } else {
+          // Если это последнее поле, вызываем автоматическую проверку
+          checkPin();
         }
       }
     }
