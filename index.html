@@ -1,5 +1,6 @@
 ﻿<!-- Этот файл web_interface_telegram.html - это веб-интерфейс для Telegram Mini App.
-     Он проверяет, разрешён ли пользователь (по Telegram ID) и требует пароль для входа. -->
+     Он проверяет, разрешён ли пользователь (по Telegram ID) и требует PIN-код для доступа.
+     PIN состоит из 4-х цифр: 2, 4, 0, 2. -->
 
 <!DOCTYPE html>
 <html lang="ru">
@@ -50,6 +51,19 @@
     .hidden {
       display: none;
     }
+    /* Стили для PIN-кода */
+    #pin-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    #pin-container input {
+      width: 50px;
+      height: 50px;
+      font-size: 2em;
+      text-align: center;
+      margin: 0 5px;
+    }
   </style>
 </head>
 <body>
@@ -59,11 +73,16 @@
     <p>Вы не авторизованы для использования этого мини-приложения.</p>
   </div>
   
-  <!-- Форма для ввода пароля -->
+  <!-- Форма для ввода PIN-кода -->
   <div id="loginForm" class="hidden">
-    <h2>Введите пароль для доступа</h2>
-    <input type="password" id="passwordInput" placeholder="Пароль">
-    <button onclick="checkPassword()">Войти</button>
+    <h2>Введите PIN для доступа</h2>
+    <div id="pin-container">
+      <input type="text" id="pin1" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'pin2')" />
+      <input type="text" id="pin2" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'pin3')" onkeydown="backspaceToPrev(event, this, 'pin1')" />
+      <input type="text" id="pin3" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'pin4')" onkeydown="backspaceToPrev(event, this, 'pin2')" />
+      <input type="text" id="pin4" maxlength="1" inputmode="numeric" pattern="[0-9]*" onkeydown="backspaceToPrev(event, this, 'pin3')" />
+    </div>
+    <button onclick="checkPin()">Войти</button>
   </div>
   
   <!-- Основной интерфейс приложения -->
@@ -85,8 +104,8 @@
     // CEO: 5817782470, HEAD: 5907736789
     const allowedUsers = [5817782470, 5907736789];
     
-    // Задаём правильный пароль для входа (замени на нужное значение)
-    const correctPassword = "mypassword";
+    // Задаём правильный PIN-код как массив цифр
+    const correctPIN = ["2", "4", "0", "2"];
     
     // Получаем данные текущего пользователя из Telegram
     const currentUser = tg.initDataUnsafe.user;
@@ -103,27 +122,51 @@
     if (!currentUser || (allowedUsers.length && !allowedUsers.includes(currentUser.id))) {
       showBlock("accessDenied");
     } else {
-      // Если пользователь разрешён, сначала показываем форму ввода пароля
+      // Если пользователь разрешён, сначала показываем форму ввода PIN-кода
       showBlock("loginForm");
-      // Устанавливаем приветствие в форме (если потребуется)
+      // Устанавливаем приветствие в интерфейсе, если потребуется
       document.getElementById("username").innerText = `Привет, ${currentUser.first_name}!`;
     }
     
-    // Функция проверки пароля, вызывается кнопкой "Войти"
-    function checkPassword() {
-      const password = document.getElementById("passwordInput").value;
-      if (password === correctPassword) {
-        hideBlock("loginForm");
-        showBlock("appInterface");
-      } else {
-        alert("Неверный пароль!");
+    // Функция для перехода к следующему полю ввода при вводе цифры
+    function moveToNext(current, nextId) {
+      if (current.value.length === 1) {
+        document.getElementById(nextId).focus();
       }
     }
     
-    // Функция для отправки отчёта. Каждая кнопка вызывает эту функцию с номером отчёта.
+    // Функция для возврата к предыдущему полю при нажатии Backspace
+    function backspaceToPrev(event, current, prevId) {
+      if (event.key === "Backspace" && current.value === "") {
+        document.getElementById(prevId).focus();
+      }
+    }
+    
+    // Функция проверки введённого PIN
+    function checkPin() {
+      const pin1 = document.getElementById("pin1").value;
+      const pin2 = document.getElementById("pin2").value;
+      const pin3 = document.getElementById("pin3").value;
+      const pin4 = document.getElementById("pin4").value;
+      const enteredPIN = [pin1, pin2, pin3, pin4];
+      
+      if (enteredPIN.join("") === correctPIN.join("")) {
+        hideBlock("loginForm");
+        showBlock("appInterface");
+      } else {
+        alert("Неверный PIN!");
+        // Очищаем поля для повторного ввода
+        document.getElementById("pin1").value = "";
+        document.getElementById("pin2").value = "";
+        document.getElementById("pin3").value = "";
+        document.getElementById("pin4").value = "";
+        document.getElementById("pin1").focus();
+      }
+    }
+    
+    // Функция для отправки отчёта (аналогично предыдущему примеру)
     function sendReport(reportId) {
       alert(`Отчёт ${reportId} запущен!`);
-      // Отправляем данные боту в виде JSON-строки
       tg.sendData(JSON.stringify({ type: "report", reportId: reportId, userId: currentUser.id }));
     }
     
