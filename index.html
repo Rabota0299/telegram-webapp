@@ -13,7 +13,7 @@
       min-height: 100vh;
       font-family: 'MedievalSharp', cursive;
     }
-    /* Стартовая страница: чёрный фон, текст белый */
+    /* Стартовая страница: чёрный фон */
     #startPage {
       background: #000;
       color: #fff;
@@ -24,9 +24,20 @@
       height: 100vh;
       text-align: center;
     }
-    #startPage h1 {
+    /* Красный жирный текст */
+    .redText {
+      color: red;
+      font-weight: bold;
       font-size: 2em;
-      line-height: 1.2;
+      margin: 0;
+      line-height: 1;
+    }
+    /* Белый жирный текст */
+    .whiteText {
+      color: white;
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-top: 1em;
     }
     #startPage button {
       margin-top: 20px;
@@ -38,18 +49,18 @@
       color: #fff;
       cursor: pointer;
     }
-    /* Страница ввода PIN-кода */
+    /* Страница PIN-кода: фон с изображением */
     #pinPage {
-      display: none; /* изначально скрыта */
+      display: none;
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
       background-size: cover;
       height: 100vh;
       position: relative;
     }
-    /* Контейнер для PIN-кода: располагается чуть выше середины */
+    /* Контейнер для PIN-кода располагается чуть выше середины */
     #pinContainer {
       position: absolute;
-      top: 40%;  /* регулируйте значение, чтобы отрегулировать вертикальное положение */
+      top: 40%;
       width: 100%;
       display: flex;
       justify-content: center;
@@ -70,7 +81,11 @@
 <body>
   <!-- Стартовая страница -->
   <div id="startPage">
-    <h1>Карта мародеров<br>торжественно клянись что замышляешь только шалость</h1>
+    <h1 class="redText">THE</h1>
+    <h1 class="redText">MARAUDER'S</h1>
+    <h1 class="redText">MAP</h1>
+    <br><br><br>
+    <p class="whiteText">торжественно клянешься что замышляешь только шалость</p>
     <button onclick="goToPinPage()">Клянусь</button>
   </div>
 
@@ -85,16 +100,15 @@
   </div>
 
   <script>
-    // Функция для перехода на страницу ввода PIN
+    // Функция перехода со стартовой страницы на страницу ввода PIN
     function goToPinPage() {
       document.getElementById('startPage').style.display = 'none';
       document.getElementById('pinPage').style.display = 'block';
-      // Если нужно, можно установить фокус на первое поле:
       document.getElementById('pin1').focus();
     }
     
-    // Обработка ввода в PIN-поле: сохраняем цифру и заменяем её на эмодзи доллара.
-    // Если это последнее поле, можно автоматически вызвать проверку.
+    // Обработка ввода в PIN-поле:
+    // При вводе цифры сохраняется значение в data-атрибут, заменяется на эмодзи, и если это последнее поле — вызывается checkPIN().
     function handlePinInput(input, nextId) {
       let val = input.value;
       if (val.length > 0) {
@@ -103,13 +117,12 @@
         if (nextId) {
           document.getElementById(nextId).focus();
         } else {
-          // Здесь можно автоматически вызвать проверку PIN, если необходимо:
-          // checkPIN();
+          checkPIN();
         }
       }
     }
     
-    // Обработка нажатия Backspace: очищаем поле и переводим фокус на предыдущее.
+    // Обработка нажатия Backspace: очищает поле и переводит фокус на предыдущее.
     function handleBackspace(event, input, prevId) {
       if (event.key === "Backspace") {
         input.dataset.value = "";
@@ -120,21 +133,21 @@
       }
     }
     
-    // Здесь можно добавить функцию проверки PIN, если требуется, например:
-    /*
+    // Функция проверки PIN-кода.
+    // Если введён правильный PIN ("2402"), происходит успешный вход (например, вывод сообщения).
+    // Если PIN неверный, поля очищаются.
     function checkPIN() {
       const pin1 = document.getElementById("pin1").dataset.value || "";
       const pin2 = document.getElementById("pin2").dataset.value || "";
       const pin3 = document.getElementById("pin3").dataset.value || "";
       const pin4 = document.getElementById("pin4").dataset.value || "";
       const enteredPIN = [pin1, pin2, pin3, pin4].join("");
-      // Сравните с правильным PIN, например "2402"
+      
       if (enteredPIN === "2402") {
-        // Успешный вход, можно выполнить переход дальше
-        alert("PIN верный!");
+        alert("PIN верный!"); // Здесь можно выполнить дальнейшую логику перехода
+        // Например, перейти на другую страницу или показать основной интерфейс приложения
       } else {
         alert("Неверный PIN!");
-        // Очищаем поля
         ["pin1", "pin2", "pin3", "pin4"].forEach(function(id) {
           document.getElementById(id).value = "";
           document.getElementById(id).dataset.value = "";
@@ -142,7 +155,9 @@
         document.getElementById("pin1").focus();
       }
     }
-    */
+    
+    // Если нужно интегрировать Telegram WebApp API, можно добавить его вызов здесь
+    // Например, tg.expand(); и т.д.
   </script>
 </body>
 </html>
