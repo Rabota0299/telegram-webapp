@@ -1,20 +1,22 @@
 ﻿<!-- Этот файл web_interface_telegram.html - это веб-интерфейс для Telegram Mini App.
      Он проверяет, разрешён ли пользователь (по Telegram ID) и требует PIN-код для доступа.
-     PIN состоит из 4-х цифр: 2, 4, 0, 2. -->
+     PIN состоит из 4 цифр: 2 4 0 2. При вводе цифры вместо неё показывается эмодзи 💲. -->
 
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <!-- Подключаем шрифт MedievalSharp для готического стиля -->
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Защищённое мини-приложение</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'MedievalSharp', cursive;
       text-align: center;
       padding: 20px;
-      background: linear-gradient(135deg, #74ABE2, #5563DE);
+      background: #000;
       color: #fff;
       margin: 0;
       min-height: 100vh;
@@ -25,6 +27,10 @@
     h1 {
       font-size: 2.5em;
       margin-bottom: 20px;
+    }
+    h2 {
+      font-size: 2em;
+      margin-bottom: 10px;
     }
     p {
       font-size: 1.2em;
@@ -38,15 +44,15 @@
       margin: 5px;
     }
     button {
-      background: #2a9d8f;
+      background: red;
       color: #fff;
       cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
       transition: transform 0.2s, box-shadow 0.2s;
     }
     button:hover {
       transform: translateY(-3px);
-      box-shadow: 0 6px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 6px 10px rgba(0,0,0,0.6);
     }
     .hidden {
       display: none;
@@ -58,11 +64,15 @@
       margin-bottom: 20px;
     }
     #pin-container input {
-      width: 50px;
-      height: 50px;
-      font-size: 2em;
+      width: 40px;
+      height: 40px;
+      font-size: 1.5em;
       text-align: center;
       margin: 0 5px;
+      background: #333;
+      border: 1px solid #555;
+      color: transparent; /* текст скрыт */
+      caret-color: transparent; /* скрываем курсор */
     }
   </style>
 </head>
@@ -75,12 +85,13 @@
   
   <!-- Форма для ввода PIN-кода -->
   <div id="loginForm" class="hidden">
-    <h2>Введите PIN для доступа</h2>
+    <h2>Карта Мародеров</h2>
+    <p>Если торжественно клянешься что замышляешь только шалость - введи PINcode</p>
     <div id="pin-container">
-      <input type="text" id="pin1" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'pin2')" />
-      <input type="text" id="pin2" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'pin3')" onkeydown="backspaceToPrev(event, this, 'pin1')" />
-      <input type="text" id="pin3" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="moveToNext(this, 'pin4')" onkeydown="backspaceToPrev(event, this, 'pin2')" />
-      <input type="text" id="pin4" maxlength="1" inputmode="numeric" pattern="[0-9]*" onkeydown="backspaceToPrev(event, this, 'pin3')" />
+      <input type="text" id="pin1" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin2')" />
+      <input type="text" id="pin2" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin3')" onkeydown="handleBackspace(event, this, 'pin1')" />
+      <input type="text" id="pin3" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin4')" onkeydown="handleBackspace(event, this, 'pin2')" />
+      <input type="text" id="pin4" maxlength="1" inputmode="numeric" pattern="[0-9]*" onkeydown="handleBackspace(event, this, 'pin3')" oninput="handlePinInput(this, '')" />
     </div>
     <button onclick="checkPin()">Войти</button>
   </div>
@@ -104,50 +115,59 @@
     // CEO: 5817782470, HEAD: 5907736789
     const allowedUsers = [5817782470, 5907736789];
     
-    // Задаём правильный PIN-код как массив цифр
+    // Правильный PIN-код (маскируем как массив строк)
     const correctPIN = ["2", "4", "0", "2"];
     
     // Получаем данные текущего пользователя из Telegram
     const currentUser = tg.initDataUnsafe.user;
     
-    // Функции для показа и скрытия блоков
-    function showBlock(blockId) {
-      document.getElementById(blockId).classList.remove("hidden");
+    // Функции для показа/скрытия блоков
+    function showBlock(id) {
+      document.getElementById(id).classList.remove("hidden");
     }
-    function hideBlock(blockId) {
-      document.getElementById(blockId).classList.add("hidden");
+    function hideBlock(id) {
+      document.getElementById(id).classList.add("hidden");
     }
     
-    // Первичная проверка: если данные отсутствуют или ID не разрешён, показываем сообщение об отказе
+    // Проверка доступа по Telegram ID
     if (!currentUser || (allowedUsers.length && !allowedUsers.includes(currentUser.id))) {
       showBlock("accessDenied");
     } else {
-      // Если пользователь разрешён, сначала показываем форму ввода PIN-кода
       showBlock("loginForm");
-      // Устанавливаем приветствие в интерфейсе, если потребуется
       document.getElementById("username").innerText = `Привет, ${currentUser.first_name}!`;
     }
     
-    // Функция для перехода к следующему полю ввода при вводе цифры
-    function moveToNext(current, nextId) {
-      if (current.value.length === 1) {
-        document.getElementById(nextId).focus();
+    // Функция для обработки ввода в PIN-поле
+    function handlePinInput(input, nextId) {
+      let val = input.value;
+      if (val.length > 0) {
+        // Сохраняем введённую цифру в data-атрибуте
+        input.dataset.value = val;
+        // Меняем отображаемое значение на эмодзи доллара
+        input.value = "💲";
+        if (nextId) {
+          document.getElementById(nextId).focus();
+        }
       }
     }
     
-    // Функция для возврата к предыдущему полю при нажатии Backspace
-    function backspaceToPrev(event, current, prevId) {
-      if (event.key === "Backspace" && current.value === "") {
-        document.getElementById(prevId).focus();
+    // Функция для обработки Backspace
+    function handleBackspace(event, input, prevId) {
+      if (event.key === "Backspace") {
+        input.dataset.value = "";
+        input.value = "";
+        if (prevId) {
+          document.getElementById(prevId).focus();
+        }
       }
     }
     
-    // Функция проверки введённого PIN
+    // Функция проверки PIN-кода
     function checkPin() {
-      const pin1 = document.getElementById("pin1").value;
-      const pin2 = document.getElementById("pin2").value;
-      const pin3 = document.getElementById("pin3").value;
-      const pin4 = document.getElementById("pin4").value;
+      const pin1 = document.getElementById("pin1").dataset.value || "";
+      const pin2 = document.getElementById("pin2").dataset.value || "";
+      const pin3 = document.getElementById("pin3").dataset.value || "";
+      const pin4 = document.getElementById("pin4").dataset.value || "";
       const enteredPIN = [pin1, pin2, pin3, pin4];
       
       if (enteredPIN.join("") === correctPIN.join("")) {
@@ -155,16 +175,16 @@
         showBlock("appInterface");
       } else {
         alert("Неверный PIN!");
-        // Очищаем поля для повторного ввода
-        document.getElementById("pin1").value = "";
-        document.getElementById("pin2").value = "";
-        document.getElementById("pin3").value = "";
-        document.getElementById("pin4").value = "";
+        // Очищаем все поля
+        ["pin1", "pin2", "pin3", "pin4"].forEach(function(id) {
+          document.getElementById(id).value = "";
+          document.getElementById(id).dataset.value = "";
+        });
         document.getElementById("pin1").focus();
       }
     }
     
-    // Функция для отправки отчёта (аналогично предыдущему примеру)
+    // Функция отправки отчёта (как и ранее)
     function sendReport(reportId) {
       alert(`Отчёт ${reportId} запущен!`);
       tg.sendData(JSON.stringify({ type: "report", reportId: reportId, userId: currentUser.id }));
