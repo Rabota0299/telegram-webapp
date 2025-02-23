@@ -1,12 +1,12 @@
 ﻿<!-- Этот файл web_interface_telegram.html - это веб-интерфейс для Telegram Mini App.
      Он проверяет, разрешён ли пользователь (по Telegram ID) и требует PIN-код для доступа.
-     PIN состоит из 4 цифр: 2 4 0 2. При вводе цифры вместо неё показывается эмодзи 💲. -->
-
+     PIN состоит из 4 цифр: 2 4 0 2. При вводе цифры вместо неё показывается эмодзи 💲.
+     Фоновое изображение – Marauder%27sMap.jpg -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <!-- Подключаем шрифт MedievalSharp для готического стиля (напоминает оформление Гарри Поттера) -->
+  <!-- Подключаем шрифт MedievalSharp для готического стиля -->
   <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Защищённое мини-приложение</title>
@@ -16,7 +16,9 @@
       font-family: 'MedievalSharp', cursive;
       text-align: center;
       padding: 20px;
-      background: #000;
+      /* Используем фоновое изображение */
+      background: url('Marauder%27sMap.jpg') no-repeat center center fixed;
+      background-size: cover;
       color: #fff;
       margin: 0;
       min-height: 100vh;
@@ -57,21 +59,21 @@
     .hidden {
       display: none;
     }
-    /* Стили для PIN-кода */
+    /* Стили для PIN-кода: уменьшенные прямоугольные поля */
     #pin-container {
       display: flex;
       justify-content: center;
       margin-bottom: 20px;
     }
     #pin-container input {
-      width: 20px;           /* уменьшено с 40px */
-      height: 20px;          /* уменьшено с 40px */
-      font-size: 1em;        /* уменьшено с 1.5em */
+      width: 20px;
+      height: 20px;
+      font-size: 1em;
       text-align: center;
       margin: 0 5px;
       background: #333;
       border: 1px solid #555;
-      color: #fff;           /* текст будет белым, чтобы эмодзи был виден */
+      color: #fff;
       caret-color: transparent;
     }
   </style>
@@ -111,8 +113,7 @@
   
   <script>
     let tg = window.Telegram.WebApp;
-    // Разрешённые Telegram ID
-    // CEO: 5817782470, HEAD: 5907736789
+    // Разрешённые Telegram ID: CEO и HEAD
     const allowedUsers = [5817782470, 5907736789];
     
     // Правильный PIN-код (маскируем как массив строк)
@@ -141,9 +142,8 @@
     function handlePinInput(input, nextId) {
       let val = input.value;
       if (val.length > 0) {
-        // Сохраняем введённую цифру в data-атрибуте
         input.dataset.value = val;
-        // Меняем отображаемое значение на эмодзи доллара
+        // Показываем эмодзи доллара вместо цифры
         input.value = "💲";
         if (nextId) {
           document.getElementById(nextId).focus();
@@ -175,7 +175,6 @@
         showBlock("appInterface");
       } else {
         alert("Неверный PIN!");
-        // Очищаем все поля
         ["pin1", "pin2", "pin3", "pin4"].forEach(function(id) {
           document.getElementById(id).value = "";
           document.getElementById(id).dataset.value = "";
