@@ -24,7 +24,7 @@
       height: 100vh;
       text-align: center;
     }
-    /* Красный жирный текст */
+    /* Красный жирный текст для верхней части */
     .redText {
       color: red;
       font-weight: bold;
@@ -32,7 +32,7 @@
       margin: 0;
       line-height: 1;
     }
-    /* Белый жирный текст */
+    /* Белый жирный текст для нижней строки */
     .whiteText {
       color: white;
       font-weight: bold;
@@ -49,7 +49,7 @@
       color: #fff;
       cursor: pointer;
     }
-    /* Страница PIN-кода: фон с изображением */
+    /* Страница ввода PIN-кода: фон с изображением */
     #pinPage {
       display: none;
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
@@ -76,6 +76,33 @@
       color: #fff;
       caret-color: transparent;
     }
+    /* Страница отчётов: используем тот же фон, как на странице PIN */
+    #reportPage {
+      display: none;
+      background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    #reportPage #buttons button {
+      margin: 10px;
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background: red;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #reportPage #buttons button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 10px rgba(0,0,0,0.6);
+    }
   </style>
 </head>
 <body>
@@ -99,6 +126,17 @@
     </div>
   </div>
 
+  <!-- Страница отчётов -->
+  <div id="reportPage">
+    <div id="buttons">
+      <button onclick="sendReport(1)">Отчёт 1</button>
+      <button onclick="sendReport(2)">Отчёт 2</button>
+      <button onclick="sendReport(3)">Отчёт 3</button>
+      <button onclick="sendReport(4)">Отчёт 4</button>
+      <button onclick="sendReport(5)">Отчёт 5</button>
+    </div>
+  </div>
+
   <script>
     // Функция перехода со стартовой страницы на страницу ввода PIN
     function goToPinPage() {
@@ -107,8 +145,8 @@
       document.getElementById('pin1').focus();
     }
     
-    // Обработка ввода в PIN-поле:
-    // При вводе цифры сохраняется значение в data-атрибут, заменяется на эмодзи, и если это последнее поле — вызывается checkPIN().
+    // Обработка ввода в PIN-поле: сохраняет цифру и заменяет её на эмодзи доллара.
+    // Если это последнее поле, автоматически вызывается checkPIN.
     function handlePinInput(input, nextId) {
       let val = input.value;
       if (val.length > 0) {
@@ -134,7 +172,7 @@
     }
     
     // Функция проверки PIN-кода.
-    // Если введён правильный PIN ("2402"), происходит успешный вход (например, вывод сообщения).
+    // Если введён правильный PIN ("2402"), происходит переход на страницу отчётов.
     // Если PIN неверный, поля очищаются.
     function checkPIN() {
       const pin1 = document.getElementById("pin1").dataset.value || "";
@@ -144,8 +182,8 @@
       const enteredPIN = [pin1, pin2, pin3, pin4].join("");
       
       if (enteredPIN === "2402") {
-        alert("PIN верный!"); // Здесь можно выполнить дальнейшую логику перехода
-        // Например, перейти на другую страницу или показать основной интерфейс приложения
+        document.getElementById('pinPage').style.display = 'none';
+        document.getElementById('reportPage').style.display = 'flex';
       } else {
         alert("Неверный PIN!");
         ["pin1", "pin2", "pin3", "pin4"].forEach(function(id) {
@@ -156,8 +194,15 @@
       }
     }
     
-    // Если нужно интегрировать Telegram WebApp API, можно добавить его вызов здесь
-    // Например, tg.expand(); и т.д.
+    // Функция отправки отчёта (здесь можно добавить интеграцию с Google Sheets)
+    function sendReport(reportId) {
+      // Пример: отправка данных через Telegram WebApp API
+      alert(`Отчёт ${reportId} запущен!`);
+      // tg.sendData(JSON.stringify({ type: "report", reportId: reportId, userId: currentUser.id }));
+    }
+    
+    // Если интегрируете Telegram WebApp API, можно вызвать tg.expand();
+    // tg.expand();
   </script>
 </body>
 </html>
