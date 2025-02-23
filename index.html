@@ -1,7 +1,7 @@
 ﻿<!-- Этот файл web_interface_telegram.html - это веб-интерфейс для Telegram Mini App.
      Он проверяет, разрешён ли пользователь (по Telegram ID) и требует PIN-код для доступа.
      PIN состоит из 4 цифр: 2 4 0 2. При вводе цифры вместо неё показывается эмодзи 💲.
-     Фоновое изображение – Marauder%27sMap.jpg -->
+     Фоновое изображение – KartaMaroderovMENU.png.png -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -16,8 +16,8 @@
       font-family: 'MedievalSharp', cursive;
       text-align: center;
       padding: 20px;
-      /* Используем фоновое изображение */
-      background: url('Marauder%27sMap.jpg') no-repeat center center fixed;
+      /* Фоновое изображение */
+      background: url('KartaMaroderovMENU.png.png') no-repeat center center fixed;
       background-size: cover;
       color: #fff;
       margin: 0;
@@ -73,7 +73,7 @@
       margin: 0 5px;
       background: #333;
       border: 1px solid #555;
-      color: #fff;
+      color: #fff;  /* текст для эмодзи */
       caret-color: transparent;
     }
   </style>
@@ -113,16 +113,16 @@
   
   <script>
     let tg = window.Telegram.WebApp;
-    // Разрешённые Telegram ID: CEO и HEAD
+    // Разрешённые Telegram ID (CEO и HEAD)
     const allowedUsers = [5817782470, 5907736789];
     
-    // Правильный PIN-код (маскируем как массив строк)
+    // Правильный PIN-код (как массив строк)
     const correctPIN = ["2", "4", "0", "2"];
     
     // Получаем данные текущего пользователя из Telegram
     const currentUser = tg.initDataUnsafe.user;
     
-    // Функции для показа/скрытия блоков
+    // Функции для показа и скрытия блоков
     function showBlock(id) {
       document.getElementById(id).classList.remove("hidden");
     }
@@ -138,12 +138,12 @@
       document.getElementById("username").innerText = `Привет, ${currentUser.first_name}!`;
     }
     
-    // Функция для обработки ввода в PIN-поле
+    // Функция для обработки ввода в PIN-поле:
+    // При вводе цифры сохраняется значение в data-атрибуте и вместо цифры показывается эмодзи доллара
     function handlePinInput(input, nextId) {
       let val = input.value;
       if (val.length > 0) {
         input.dataset.value = val;
-        // Показываем эмодзи доллара вместо цифры
         input.value = "💲";
         if (nextId) {
           document.getElementById(nextId).focus();
@@ -151,7 +151,7 @@
       }
     }
     
-    // Функция для обработки Backspace
+    // Функция для обработки нажатия Backspace
     function handleBackspace(event, input, prevId) {
       if (event.key === "Backspace") {
         input.dataset.value = "";
@@ -162,7 +162,7 @@
       }
     }
     
-    // Функция проверки PIN-кода
+    // Функция проверки введённого PIN-кода
     function checkPin() {
       const pin1 = document.getElementById("pin1").dataset.value || "";
       const pin2 = document.getElementById("pin2").dataset.value || "";
@@ -175,6 +175,7 @@
         showBlock("appInterface");
       } else {
         alert("Неверный PIN!");
+        // Очищаем поля для повторного ввода
         ["pin1", "pin2", "pin3", "pin4"].forEach(function(id) {
           document.getElementById(id).value = "";
           document.getElementById(id).dataset.value = "";
