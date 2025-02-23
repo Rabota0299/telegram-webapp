@@ -1,66 +1,133 @@
-﻿<!-- Этот файл web_interface_telegram.html - это веб-интерфейс для Telegram Mini App. 
-     Он отображает приветственное сообщение и кнопку для отправки данных боту. -->
+﻿<!-- Этот файл web_interface_telegram.html - это веб-интерфейс для Telegram Mini App.
+     Он проверяет, разрешён ли пользователь (по Telegram ID) и требует пароль для входа. -->
 
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Mini App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-      body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        text-align: center;
-        padding: 20px;
-        background: linear-gradient(135deg, #74ABE2, #5563DE);
-        color: #fff;
-        margin: 0;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-      h1 {
-        font-size: 2.5em;
-        margin-bottom: 20px;
-      }
-      p {
-        font-size: 1.2em;
-        margin-bottom: 30px;
-      }
-      button {
-        padding: 12px 30px;
-        font-size: 18px;
-        background: #2a9d8f;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        transition: transform 0.2s, box-shadow 0.2s;
-      }
-      button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 10px rgba(0,0,0,0.3);
-      }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Защищённое мини-приложение</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #74ABE2, #5563DE);
+      color: #fff;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 1.2em;
+      margin-bottom: 30px;
+    }
+    input, button {
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      margin: 5px;
+    }
+    button {
+      background: #2a9d8f;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 10px rgba(0,0,0,0.3);
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
+  <!-- Блок с сообщением об отказе в доступе -->
+  <div id="accessDenied" class="hidden">
+    <h2>Доступ запрещён</h2>
+    <p>Вы не авторизованы для использования этого мини-приложения.</p>
+  </div>
+  
+  <!-- Форма для ввода пароля -->
+  <div id="loginForm" class="hidden">
+    <h2>Введите пароль для доступа</h2>
+    <input type="password" id="passwordInput" placeholder="Пароль">
+    <button onclick="checkPassword()">Войти</button>
+  </div>
+  
+  <!-- Основной интерфейс приложения -->
+  <div id="appInterface" class="hidden">
     <h1>Добро пожаловать в Telegram Mini App</h1>
     <p id="username">Загрузка...</p>
-    <button onclick="sendMessage()">Отправить сообщение боту</button>
-
-    <script>
-        let tg = window.Telegram.WebApp;
-        document.getElementById("username").innerText = `Привет, ${tg.initDataUnsafe.user?.first_name || "Гость"}!`;
-
-        function sendMessage() {
-            alert("Кнопка нажата!");
-            tg.sendData("Привет от WebApp!");
-        }
-
-        tg.expand();
-    </script>
+    <div id="buttons">
+      <button onclick="sendReport(1)">Отчёт 1</button>
+      <button onclick="sendReport(2)">Отчёт 2</button>
+      <button onclick="sendReport(3)">Отчёт 3</button>
+      <button onclick="sendReport(4)">Отчёт 4</button>
+      <button onclick="sendReport(5)">Отчёт 5</button>
+    </div>
+  </div>
+  
+  <script>
+    let tg = window.Telegram.WebApp;
+    // Разрешённые Telegram ID
+    // CEO: 5817782470, HEAD: 5907736789
+    const allowedUsers = [5817782470, 5907736789];
+    
+    // Задаём правильный пароль для входа (замени на нужное значение)
+    const correctPassword = "mypassword";
+    
+    // Получаем данные текущего пользователя из Telegram
+    const currentUser = tg.initDataUnsafe.user;
+    
+    // Функции для показа и скрытия блоков
+    function showBlock(blockId) {
+      document.getElementById(blockId).classList.remove("hidden");
+    }
+    function hideBlock(blockId) {
+      document.getElementById(blockId).classList.add("hidden");
+    }
+    
+    // Первичная проверка: если данные отсутствуют или ID не разрешён, показываем сообщение об отказе
+    if (!currentUser || (allowedUsers.length && !allowedUsers.includes(currentUser.id))) {
+      showBlock("accessDenied");
+    } else {
+      // Если пользователь разрешён, сначала показываем форму ввода пароля
+      showBlock("loginForm");
+      // Устанавливаем приветствие в форме (если потребуется)
+      document.getElementById("username").innerText = `Привет, ${currentUser.first_name}!`;
+    }
+    
+    // Функция проверки пароля, вызывается кнопкой "Войти"
+    function checkPassword() {
+      const password = document.getElementById("passwordInput").value;
+      if (password === correctPassword) {
+        hideBlock("loginForm");
+        showBlock("appInterface");
+      } else {
+        alert("Неверный пароль!");
+      }
+    }
+    
+    // Функция для отправки отчёта. Каждая кнопка вызывает эту функцию с номером отчёта.
+    function sendReport(reportId) {
+      alert(`Отчёт ${reportId} запущен!`);
+      // Отправляем данные боту в виде JSON-строки
+      tg.sendData(JSON.stringify({ type: "report", reportId: reportId, userId: currentUser.id }));
+    }
+    
+    tg.expand();
+  </script>
 </body>
 </html>
