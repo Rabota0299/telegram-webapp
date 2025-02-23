@@ -24,6 +24,7 @@
         document.getElementById("username").innerText = `Привет, ${tg.initDataUnsafe.user?.first_name || "Гость"}!`;
 
         function sendMessage() {
+            alert("Кнопка нажата!");
             tg.sendData("Привет от WebApp!");
         }
 
