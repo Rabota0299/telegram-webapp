@@ -16,7 +16,7 @@
       font-family: 'MedievalSharp', cursive;
       text-align: center;
       padding: 20px;
-      background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
+      background: url('images/KartaMaroderovMENU.png') no-repeat center center;
       background-size: cover;
       color: #fff;
       margin: 0;
@@ -25,11 +25,14 @@
       flex-direction: column;
       justify-content: center;
     }
-    /* Блок приветствия вверху */
+    /* Принудительная прозрачность для внутренних блоков */
+    #greeting,
+    #loginForm,
+    #appInterface {
+      background-color: transparent !important;
+    }
+    /* Блок приветствия */
     #greeting {
-      background: rgba(0, 0, 0, 0.7);
-      border: 2px solid #fff;
-      padding: 10px;
       margin-bottom: 20px;
     }
     #greeting h1 {
@@ -65,7 +68,7 @@
     .hidden {
       display: none;
     }
-    /* Стили для PIN-кода: уменьшенные прямоугольные поля, отступ 3cm сверху */
+    /* Стили для PIN-кода с отступом сверху в 3 см */
     #pin-container {
       display: flex;
       justify-content: center;
@@ -80,17 +83,17 @@
       margin: 0 5px;
       background: #333;
       border: 1px solid #555;
-      color: #fff;  /* текст для эмодзи */
+      color: #fff;
       caret-color: transparent;
     }
   </style>
 </head>
 <body>
-  <!-- Приветствие -->
+  <!-- Блок приветствия -->
   <div id="greeting">
     <h1>Добро пожаловать в мини-приложение!</h1>
   </div>
-
+  
   <!-- Блок с сообщением об отказе в доступе -->
   <div id="accessDenied" class="hidden">
     <h2>Доступ запрещён</h2>
@@ -124,16 +127,13 @@
   
   <script>
     let tg = window.Telegram.WebApp;
-    // Разрешённые Telegram ID (CEO и HEAD)
+    // Разрешённые Telegram ID (например, CEO и HEAD)
     const allowedUsers = [5817782470, 5907736789];
-    
-    // Правильный PIN-код (как массив строк)
+    // Правильный PIN-код (массив строк)
     const correctPIN = ["2", "4", "0", "2"];
-    
     // Получаем данные текущего пользователя из Telegram
     const currentUser = tg.initDataUnsafe.user;
     
-    // Функции для показа и скрытия блоков
     function showBlock(id) {
       document.getElementById(id).classList.remove("hidden");
     }
@@ -150,8 +150,8 @@
     }
     
     // Функция для обработки ввода в PIN-поле:
-    // При вводе цифры сохраняется значение в data-атрибуте и вместо цифры показывается эмодзи доллара.
-    // Если это последнее поле, сразу вызывается проверка PIN.
+    // Сохраняет цифру в data-атрибут и заменяет её на эмодзи доллара.
+    // Если это последнее поле, автоматически вызывает проверку PIN.
     function handlePinInput(input, nextId) {
       let val = input.value;
       if (val.length > 0) {
@@ -160,7 +160,6 @@
         if (nextId) {
           document.getElementById(nextId).focus();
         } else {
-          // Если это последнее поле, вызываем автоматическую проверку
           checkPin();
         }
       }
@@ -190,7 +189,7 @@
         showBlock("appInterface");
       } else {
         alert("Неверный PIN!");
-        // Очищаем поля для повторного ввода
+        // Очищаем все поля для повторного ввода
         ["pin1", "pin2", "pin3", "pin4"].forEach(function(id) {
           document.getElementById(id).value = "";
           document.getElementById(id).dataset.value = "";
