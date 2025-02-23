@@ -1,7 +1,3 @@
-<!-- Этот файл web_interface_telegram.html - это веб-интерфейс для Telegram Mini App.
-     Он проверяет, разрешён ли пользователь (по Telegram ID) и требует PIN-код для доступа.
-     PIN состоит из 4 цифр: 2 4 0 2. При вводе цифры вместо неё показывается эмодзи 💲.
-     Фоновое изображение – KartaMaroderovMENU.png -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -9,84 +5,61 @@
   <!-- Подключаем шрифт MedievalSharp для готического стиля -->
   <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Защищённое мини-приложение</title>
+  <title>Карта Мародеров</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
-      font-family: 'MedievalSharp', cursive;
-      text-align: center;
-      padding: 20px;
-      background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
-      background-size: cover;
-      color: #fff;
       margin: 0;
       min-height: 100vh;
+      font-family: 'MedievalSharp', cursive;
+    }
+    /* Стартовая страница: чёрный фон, текст белый */
+    #startPage {
+      background: #000;
+      color: #fff;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
     }
-    /* Стиль для блока входа – он теперь является flex-контейнером */
-    #loginForm {
-      display: flex;
-      flex-direction: column;
-      /* Желательно задать минимальную высоту, чтобы текст остался наверху, а поля ввода – внизу */
-      min-height: 150px;
-    }
-    /* Текст в блоке входа – делаем жирным и черным */
-    #loginForm h2,
-    #loginForm p {
-      font-weight: bold !important;
-      color: #000 !important;
-      background: none;
-      margin: 0.5em 0;
-    }
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 20px;
-    }
-    h2 {
+    #startPage h1 {
       font-size: 2em;
-      margin-bottom: 10px;
+      line-height: 1.2;
     }
-    p {
-      font-size: 1.2em;
-      margin-bottom: 20px;
-    }
-    input, button {
+    #startPage button {
+      margin-top: 20px;
       padding: 12px 20px;
       font-size: 16px;
       border: none;
       border-radius: 5px;
-      margin: 5px;
-    }
-    button {
       background: red;
       color: #fff;
       cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
-      transition: transform 0.2s, box-shadow 0.2s;
     }
-    button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 10px rgba(0,0,0,0.6);
+    /* Страница ввода PIN-кода */
+    #pinPage {
+      display: none; /* изначально скрыта */
+      background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      position: relative;
     }
-    .hidden {
-      display: none;
-    }
-    /* PIN-контейнер: внутри loginForm, поля прижимаются к низу */
-    #pin-container {
+    /* Контейнер для PIN-кода: располагается чуть выше середины */
+    #pinContainer {
+      position: absolute;
+      top: 40%;  /* регулируйте значение, чтобы отрегулировать вертикальное положение */
+      width: 100%;
       display: flex;
-      flex-direction: row;
       justify-content: center;
-      margin-top: auto;
-      margin-bottom: 20px;
     }
-    #pin-container input {
-      width: 20px;
-      height: 20px;
-      font-size: 1em;
+    #pinContainer input {
+      width: 30px;
+      height: 30px;
+      font-size: 1.5em;
       text-align: center;
-      margin: 0 5px;
+      margin: 0 10px;
       background: #333;
       border: 1px solid #555;
       color: #fff;
@@ -95,61 +68,33 @@
   </style>
 </head>
 <body>
-  <!-- Блок с сообщением об отказе в доступе -->
-  <div id="accessDenied" class="hidden">
-    <h2>Доступ запрещён</h2>
-    <p>Вы не авторизованы для использования этого мини-приложения.</p>
+  <!-- Стартовая страница -->
+  <div id="startPage">
+    <h1>Карта мародеров<br>торжественно клянись что замышляешь только шалость</h1>
+    <button onclick="goToPinPage()">Клянусь</button>
   </div>
-  
-  <!-- Форма для ввода PIN-кода (без кнопки "Войти") -->
-  <div id="loginForm" class="hidden">
-    <!-- Этот заголовок остаётся наверху блока -->
-    <h2>Карта Мародеров</h2>
-    <p>Если торжественно клянешься что замышляешь только шалость - введи PINcode</p>
-    <!-- PIN-контейнер будет прижат к низу блока благодаря margin-top: auto -->
-    <div id="pin-container">
+
+  <!-- Страница ввода PIN-кода -->
+  <div id="pinPage">
+    <div id="pinContainer">
       <input type="text" id="pin1" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin2')" />
       <input type="text" id="pin2" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin3')" onkeydown="handleBackspace(event, this, 'pin1')" />
       <input type="text" id="pin3" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin4')" onkeydown="handleBackspace(event, this, 'pin2')" />
       <input type="text" id="pin4" maxlength="1" inputmode="numeric" pattern="[0-9]*" onkeydown="handleBackspace(event, this, 'pin3')" oninput="handlePinInput(this, '')" />
     </div>
   </div>
-  
-  <!-- Основной интерфейс приложения -->
-  <div id="appInterface" class="hidden">
-    <h1>Добро пожаловать в Telegram Mini App</h1>
-    <p id="username">Загрузка...</p>
-    <div id="buttons">
-      <button onclick="sendReport(1)">Отчёт 1</button>
-      <button onclick="sendReport(2)">Отчёт 2</button>
-      <button onclick="sendReport(3)">Отчёт 3</button>
-      <button onclick="sendReport(4)">Отчёт 4</button>
-      <button onclick="sendReport(5)">Отчёт 5</button>
-    </div>
-  </div>
-  
+
   <script>
-    let tg = window.Telegram.WebApp;
-    // Разрешённые Telegram ID
-    const allowedUsers = [5817782470, 5907736789];
-    // Правильный PIN-код
-    const correctPIN = ["2", "4", "0", "2"];
-    const currentUser = tg.initDataUnsafe.user;
-    
-    function showBlock(id) {
-      document.getElementById(id).classList.remove("hidden");
-    }
-    function hideBlock(id) {
-      document.getElementById(id).classList.add("hidden");
+    // Функция для перехода на страницу ввода PIN
+    function goToPinPage() {
+      document.getElementById('startPage').style.display = 'none';
+      document.getElementById('pinPage').style.display = 'block';
+      // Если нужно, можно установить фокус на первое поле:
+      document.getElementById('pin1').focus();
     }
     
-    if (!currentUser || (allowedUsers.length && !allowedUsers.includes(currentUser.id))) {
-      showBlock("accessDenied");
-    } else {
-      showBlock("loginForm");
-      document.getElementById("username").innerText = `Привет, ${currentUser.first_name}!`;
-    }
-    
+    // Обработка ввода в PIN-поле: сохраняем цифру и заменяем её на эмодзи доллара.
+    // Если это последнее поле, можно автоматически вызвать проверку.
     function handlePinInput(input, nextId) {
       let val = input.value;
       if (val.length > 0) {
@@ -158,11 +103,13 @@
         if (nextId) {
           document.getElementById(nextId).focus();
         } else {
-          checkPin();
+          // Здесь можно автоматически вызвать проверку PIN, если необходимо:
+          // checkPIN();
         }
       }
     }
     
+    // Обработка нажатия Backspace: очищаем поле и переводим фокус на предыдущее.
     function handleBackspace(event, input, prevId) {
       if (event.key === "Backspace") {
         input.dataset.value = "";
@@ -173,18 +120,21 @@
       }
     }
     
-    function checkPin() {
+    // Здесь можно добавить функцию проверки PIN, если требуется, например:
+    /*
+    function checkPIN() {
       const pin1 = document.getElementById("pin1").dataset.value || "";
       const pin2 = document.getElementById("pin2").dataset.value || "";
       const pin3 = document.getElementById("pin3").dataset.value || "";
       const pin4 = document.getElementById("pin4").dataset.value || "";
-      const enteredPIN = [pin1, pin2, pin3, pin4];
-      
-      if (enteredPIN.join("") === correctPIN.join("")) {
-        hideBlock("loginForm");
-        showBlock("appInterface");
+      const enteredPIN = [pin1, pin2, pin3, pin4].join("");
+      // Сравните с правильным PIN, например "2402"
+      if (enteredPIN === "2402") {
+        // Успешный вход, можно выполнить переход дальше
+        alert("PIN верный!");
       } else {
         alert("Неверный PIN!");
+        // Очищаем поля
         ["pin1", "pin2", "pin3", "pin4"].forEach(function(id) {
           document.getElementById(id).value = "";
           document.getElementById(id).dataset.value = "";
@@ -192,13 +142,7 @@
         document.getElementById("pin1").focus();
       }
     }
-    
-    function sendReport(reportId) {
-      alert(`Отчёт ${reportId} запущен!`);
-      tg.sendData(JSON.stringify({ type: "report", reportId: reportId, userId: currentUser.id }));
-    }
-    
-    tg.expand();
+    */
   </script>
 </body>
 </html>
