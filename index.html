@@ -2,42 +2,35 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <!-- Подключаем шрифт MedievalSharp для готического стиля -->
-  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Карта Мародеров</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <title>Мини-приложение: Карта Мародеров</title>
   <style>
+    /* Общие стили */
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: 'MedievalSharp', cursive;
+      font-family: Arial, sans-serif;
     }
-    /* Стартовая страница: чёрный фон */
+    .page {
+      display: none;
+      width: 100%;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+    /* Страница 1: Стартовая страница */
     #startPage {
-      background: #000;
-      color: #fff;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      background: #000; /* чистый черный фон */
+      color: #fff;
       text-align: center;
     }
-    /* Красный жирный текст для верхней части */
-    .redText {
-      color: red;
-      font-weight: bold;
-      font-size: 2em;
+    #startPage h1 {
       margin: 0;
-      line-height: 1;
-    }
-    /* Белый жирный текст для нижней строки */
-    .whiteText {
-      color: white;
-      font-weight: bold;
-      font-size: 1.2em;
-      margin-top: 1em;
+      font-size: 2em;
+      line-height: 1.2;
     }
     #startPage button {
       margin-top: 20px;
@@ -49,25 +42,22 @@
       color: #fff;
       cursor: pointer;
     }
-    /* Страница ввода PIN-кода: фон с изображением */
+    /* Страница 2: PIN Page */
     #pinPage {
-      display: none;
-      background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
-      background-size: cover;
-      height: 100vh;
-      position: relative;
+      background: #fff; /* можно задать любой фон, здесь оставляем белый как базу */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
-    /* Контейнер для PIN-кода располагается чуть выше середины */
     #pinContainer {
-      position: absolute;
-      top: 40%;
-      width: 100%;
+      margin-top: 20px;
       display: flex;
       justify-content: center;
     }
     #pinContainer input {
-      width: 30px;
-      height: 30px;
+      width: 40px;
+      height: 40px;
       font-size: 1.5em;
       text-align: center;
       margin: 0 10px;
@@ -76,18 +66,16 @@
       color: #fff;
       caret-color: transparent;
     }
-    /* Страница отчётов: используем тот же фон, как на странице PIN */
+    /* Страница 3: Report Page */
     #reportPage {
-      display: none;
-      background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
+      background: url('images/KartaMaroderovMENU.png') no-repeat center center;
       background-size: cover;
-      height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
     }
-    #reportPage #buttons button {
+    #reportPage button {
       margin: 10px;
       padding: 12px 20px;
       font-size: 16px;
@@ -99,54 +87,49 @@
       box-shadow: 0 4px 6px rgba(0,0,0,0.4);
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    #reportPage #buttons button:hover {
+    #reportPage button:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 10px rgba(0,0,0,0.6);
     }
   </style>
 </head>
 <body>
-  <!-- Стартовая страница -->
-  <div id="startPage">
-    <h1 class="redText">THE</h1>
-    <h1 class="redText">MARAUDER'S</h1>
-    <h1 class="redText">MAP</h1>
-    <br><br><br>
-    <p class="whiteText">торжественно клянешься что замышляешь только шалость</p>
+
+  <!-- Страница 1: Стартовая страница -->
+  <div id="startPage" class="page" style="display: flex;">
+    <h1>Карта мародеров<br>
+      торжественно клянешься что замышляешь только шалость</h1>
     <button onclick="goToPinPage()">Клянусь</button>
   </div>
 
-  <!-- Страница ввода PIN-кода -->
-  <div id="pinPage">
+  <!-- Страница 2: PIN Page -->
+  <div id="pinPage" class="page">
     <div id="pinContainer">
-      <input type="text" id="pin1" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin2')" />
+      <input type="text" id="pin1" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin2')" autofocus />
       <input type="text" id="pin2" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin3')" onkeydown="handleBackspace(event, this, 'pin1')" />
       <input type="text" id="pin3" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin4')" onkeydown="handleBackspace(event, this, 'pin2')" />
       <input type="text" id="pin4" maxlength="1" inputmode="numeric" pattern="[0-9]*" onkeydown="handleBackspace(event, this, 'pin3')" oninput="handlePinInput(this, '')" />
     </div>
   </div>
 
-  <!-- Страница отчётов -->
-  <div id="reportPage">
-    <div id="buttons">
-      <button onclick="sendReport(1)">Отчёт 1</button>
-      <button onclick="sendReport(2)">Отчёт 2</button>
-      <button onclick="sendReport(3)">Отчёт 3</button>
-      <button onclick="sendReport(4)">Отчёт 4</button>
-      <button onclick="sendReport(5)">Отчёт 5</button>
-    </div>
+  <!-- Страница 3: Report Page -->
+  <div id="reportPage" class="page">
+    <button onclick="sendReport(1)">Отчёт 1</button>
+    <button onclick="sendReport(2)">Отчёт 2</button>
+    <button onclick="sendReport(3)">Отчёт 3</button>
+    <button onclick="sendReport(4)">Отчёт 4</button>
+    <button onclick="sendReport(5)">Отчёт 5</button>
   </div>
 
   <script>
-    // Функция перехода со стартовой страницы на страницу ввода PIN
+    // Функция перехода со стартовой страницы на страницу PIN
     function goToPinPage() {
       document.getElementById('startPage').style.display = 'none';
-      document.getElementById('pinPage').style.display = 'block';
+      document.getElementById('pinPage').style.display = 'flex';
       document.getElementById('pin1').focus();
     }
     
-    // Обработка ввода в PIN-поле: сохраняет цифру и заменяет её на эмодзи доллара.
-    // Если это последнее поле, автоматически вызывается checkPIN.
+    // Обработка ввода в PIN-поле
     function handlePinInput(input, nextId) {
       let val = input.value;
       if (val.length > 0) {
@@ -160,7 +143,7 @@
       }
     }
     
-    // Обработка нажатия Backspace: очищает поле и переводит фокус на предыдущее.
+    // Обработка Backspace для PIN-полей
     function handleBackspace(event, input, prevId) {
       if (event.key === "Backspace") {
         input.dataset.value = "";
@@ -171,21 +154,21 @@
       }
     }
     
-    // Функция проверки PIN-кода.
-    // Если введён правильный PIN ("2402"), происходит переход на страницу отчётов.
-    // Если PIN неверный, поля очищаются.
+    // Функция проверки PIN-кода. Правильный PIN: "2402"
     function checkPIN() {
       const pin1 = document.getElementById("pin1").dataset.value || "";
       const pin2 = document.getElementById("pin2").dataset.value || "";
       const pin3 = document.getElementById("pin3").dataset.value || "";
       const pin4 = document.getElementById("pin4").dataset.value || "";
-      const enteredPIN = [pin1, pin2, pin3, pin4].join("");
+      const enteredPIN = pin1 + pin2 + pin3 + pin4;
       
       if (enteredPIN === "2402") {
+        // Если PIN верный, переходим на страницу отчётов
         document.getElementById('pinPage').style.display = 'none';
         document.getElementById('reportPage').style.display = 'flex';
       } else {
         alert("Неверный PIN!");
+        // Очищаем все поля
         ["pin1", "pin2", "pin3", "pin4"].forEach(function(id) {
           document.getElementById(id).value = "";
           document.getElementById(id).dataset.value = "";
@@ -194,15 +177,11 @@
       }
     }
     
-    // Функция отправки отчёта (здесь можно добавить интеграцию с Google Sheets)
+    // Функция отправки отчёта. Здесь можно добавить логику вызова API Google Sheets.
     function sendReport(reportId) {
-      // Пример: отправка данных через Telegram WebApp API
       alert(`Отчёт ${reportId} запущен!`);
-      // tg.sendData(JSON.stringify({ type: "report", reportId: reportId, userId: currentUser.id }));
+      // Например, вызов: tg.sendData(JSON.stringify({ type: "report", reportId: reportId }));
     }
-    
-    // Если интегрируете Telegram WebApp API, можно вызвать tg.expand();
-    // tg.expand();
   </script>
 </body>
 </html>
