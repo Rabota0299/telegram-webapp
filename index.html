@@ -6,7 +6,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <!-- Подключаем шрифт MedievalSharp для готического стиля -->
+  <!-- Подключаем шрифт MedievalSharp для готического стиля (напоминает оформление Гарри Поттера) -->
   <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Защищённое мини-приложение</title>
@@ -64,15 +64,15 @@
       margin-bottom: 20px;
     }
     #pin-container input {
-      width: 40px;
-      height: 40px;
-      font-size: 1.5em;
+      width: 20px;           /* уменьшено с 40px */
+      height: 20px;          /* уменьшено с 40px */
+      font-size: 1em;        /* уменьшено с 1.5em */
       text-align: center;
       margin: 0 5px;
       background: #333;
       border: 1px solid #555;
-      color: transparent; /* текст скрыт */
-      caret-color: transparent; /* скрываем курсор */
+      color: #fff;           /* текст будет белым, чтобы эмодзи был виден */
+      caret-color: transparent;
     }
   </style>
 </head>
@@ -184,7 +184,7 @@
       }
     }
     
-    // Функция отправки отчёта (как и ранее)
+    // Функция отправки отчёта
     function sendReport(reportId) {
       alert(`Отчёт ${reportId} запущен!`);
       tg.sendData(JSON.stringify({ type: "report", reportId: reportId, userId: currentUser.id }));
