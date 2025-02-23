@@ -1,7 +1,7 @@
 ﻿<!-- Этот файл web_interface_telegram.html - это веб-интерфейс для Telegram Mini App.
      Он проверяет, разрешён ли пользователь (по Telegram ID) и требует PIN-код для доступа.
      PIN состоит из 4 цифр: 2 4 0 2. При вводе цифры вместо неё показывается эмодзи 💲.
-     Фоновое изображение – KartaMaroderovMENU.png.png -->
+     Фоновое изображение – KartaMaroderovMENU.png -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -17,12 +17,8 @@
       text-align: center;
       padding: 20px;
       /* Фоновое изображение */
-      background-image: url('images/KartaMaroderovMENU.png.png');
-      background-repeat: no-repeat;
-      background-position: center center;
-      background-attachment: fixed;
+      background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
       background-size: cover;
-
       color: #fff;
       margin: 0;
       min-height: 100vh;
