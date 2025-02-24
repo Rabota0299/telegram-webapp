@@ -101,14 +101,16 @@
       box-shadow: 0 6px 10px rgba(0,0,0,0.6);
     }
     #reportResult {
-      margin-top: 10px; /* Было 20px */
-      padding: 5px; /* Было 15px */
+      margin-top: 10px;
+      padding: 10px;
       background: rgba(0, 0, 0, 0.7);
       color: white;
       border-radius: 5px;
       max-width: 80%;
-      text-align: left; /* Было center */
+      text-align: center; /* Вернули центрирование */
+      line-height: 1.3; /* Уменьшаем отступ между строками */
    }
+
 
   </style>
 </head>
@@ -202,7 +204,7 @@
     const apiUrl = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
     const apiUrlSpecial = "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec";
 
-    function sendReport(reportId) {
+function sendReport(reportId) {
   let url = apiUrl;
   if (reportId === 5) {
     url = apiUrlSpecial;
@@ -211,18 +213,25 @@
   fetch(`${url}?reportId=${reportId}`)
     .then(response => response.text())
     .then(data => {
-      // Округляем все числа в тексте
+      // Округляем числа
       let roundedData = data.replace(/\d+(\.\d+)?/g, match => {
         return Math.round(parseFloat(match));
       });
 
-      // Удаляем лишние пустые строки
-      roundedData = roundedData.replace(/\n+/g, '\n'); // Оставляем только один перенос
-      roundedData = roundedData.replace(/\n/g, '<br>'); // Заменяем \n на <br>
+      // Убираем лишние пустые строки
+      roundedData = roundedData.replace(/\n+/g, '\n');
+      roundedData = roundedData.replace(/\n/g, '<br>');
 
-      document.getElementById('reportResult').innerHTML = roundedData.trim(); // Убираем лишние пробелы и переносы
+      // Исправляем "Разницу со вчера", чтобы числа были в одной строке
+      roundedData = roundedData.replace(/🔄 <b>Разница со вчера<\/b>:<br>/, '🔄 <b>Разница со вчера</b>: ');
+      
+      // Добавляем неразрывный пробел для корректного отображения
+      roundedData = roundedData.replace(/(<span style='color:red;'>[^<]+<\/span>)<br>(<span style='color:green;'>[^<]+<\/span>)/, "$1&nbsp;/&nbsp;$2");
+
+      document.getElementById('reportResult').innerHTML = roundedData.trim();
     });
 }
+
 
 
   </script>
