@@ -203,27 +203,21 @@
 
     function sendReport(reportId) {
   let url = apiUrl;
-  // Для reportId = 5 используем специальный API-эндпоинт
   if (reportId === 5) {
     url = apiUrlSpecial;
   }
-  
+
   fetch(`${url}?reportId=${reportId}`)
     .then(response => response.text())
     .then(data => {
-    // Округляете числа, если нужно
-    let roundedData = data.replace(/\d+(\.\d+)?/g, match => {
-      return Math.round(parseFloat(match));
+      // Удаляем лишние пустые строки перед разметкой <br>
+      let formattedData = data.replace(/\n+/g, '\n'); // Оставляем только один перенос
+      formattedData = formattedData.replace(/\n/g, '<br>'); // Заменяем \n на <br>
+
+      document.getElementById('reportResult').innerHTML = formattedData.trim(); // Убираем лишние пробелы и переносы в начале и конце
     });
-
-    // Превращаем обычные переводы строк в <br>
-    roundedData = roundedData.replace(/\n/g, '<br>');
-
-    // Теперь вставляем как HTML
-    document.getElementById('reportResult').innerHTML = roundedData;
-});
-
 }
+
 
   </script>
 </body>
