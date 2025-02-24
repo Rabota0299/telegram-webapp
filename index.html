@@ -254,53 +254,46 @@
     const apiUrlSpecial = "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec";
 
     function openReport(reportId, reportTitle) {
-      // Устанавливаем заголовок отчета сразу
-      document.getElementById('reportTitle').innerText = reportTitle;
+    // Устанавливаем заголовок отчета сразу
+    document.getElementById('reportTitle').innerText = reportTitle;
 
-      // Показываем страницу отчета
-      document.getElementById('reportDetailsPage').style.display = 'flex';
+    // Показываем страницу отчета
+    document.getElementById('reportDetailsPage').style.display = 'flex';
 
-      // Скрываем меню отчетов
-      document.getElementById('reportPage').style.display = 'none';
+    // Скрываем меню отчетов
+    document.getElementById('reportPage').style.display = 'none';
 
-      // Показываем сообщение "Добби отправлен..."
-      document.getElementById('reportResult').innerHTML = `<span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>`;
+    // Показываем сообщение "Добби отправлен..."
+    document.getElementById('reportResult').innerHTML = `<span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>`;
 
-      // Определяем, какой URL использовать
-      let url = (reportId === 5) ? apiUrlSpecial : apiUrl;
+    // Определяем, какой URL использовать
+    let url = (reportId === 5) ? apiUrlSpecial : apiUrl;
 
-      fetch(`${url}?reportId=${reportId}`)
-          .then(response => {
-              if (!response.ok) {
-                  throw new Error(`Ошибка сервера: ${response.status}`);
-              }
-              return response.text();
-          })
-          .then(data => {
-              let roundedData = data.replace(/\d+(\.\d+)?/g, match => Math.round(parseFloat(match)));
-              roundedData = roundedData.replace(/\n+/g, '\n').replace(/\n/g, '<br>');
-              roundedData = roundedData.replace(/🔄 <b>Разница со вчера<\/b>:<br>/, '🔄 <b>Разница со вчера</b>: ');
-              roundedData = roundedData.replace(
-                  /(<span style='color:red;'>[^<]+<\/span>)<br>(<span style='color:green;'>[^<]+<\/span>)/,
-                  "$1&nbsp;/&nbsp;$2"
-              );
+    fetch(`${url}?reportId=${reportId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Ошибка сервера: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(data => {
+            let roundedData = data.replace(/\d+(\.\d+)?/g, match => Math.round(parseFloat(match)));
+            roundedData = roundedData.replace(/\n+/g, '\n').replace(/\n/g, '<br>');
+            roundedData = roundedData.replace(/🔄 <b>Разница со вчера<\/b>:<br>/, '🔄 <b>Разница со вчера</b>: ');
+            roundedData = roundedData.replace(/(<span style='color:red;'>[^<]+<\/span>)<br>(<span style='color:green;'>[^<]+<\/span>)/, "$1&nbsp;/&nbsp;$2");
 
-              document.getElementById('reportResult').innerHTML = roundedData.trim();
-          })
-          .catch(error => {
-              document.getElementById('reportResult').innerHTML =
-                `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
-          });
-    }
+            // 🔥 Отдельная обработка отчета №5 (если `reportId === 5`)
+            if (reportId === 5) {
+                roundedData = `<div style="font-size: 1.3em; text-align: center;">${roundedData}</div>`;
+            }
 
-    function goBackToMenu() {
-      // Скрываем страницу отчета
-      document.getElementById('reportDetailsPage').style.display = 'none';
-      // Показываем меню отчетов
-      document.getElementById('reportPage').style.display = 'flex';
-      // Очищаем содержимое отчета
-      document.getElementById('reportResult').innerHTML = "";
-    }
+            document.getElementById('reportResult').innerHTML = roundedData.trim();
+        })
+        .catch(error => {
+            document.getElementById('reportResult').innerHTML = `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
+        });
+}
+
   </script>
 </body>
 </html>
