@@ -4,49 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Карта Мародеров</title>
-  <!-- Подключаем шрифт MedievalSharp для готического стиля -->
   <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    /* Убираем прокрутку */
     body {
       margin: 0;
       overflow: hidden;
       font-family: 'MedievalSharp', cursive;
     }
-    /* Все страницы занимают весь экран и позиционированы фиксированно */
     .page {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      box-sizing: border-box;
       display: none;
-    }
-    /* Стартовая страница: чёрный фон, текст по требованиям */
-    #startPage {
-      display: block; /* первая страница видна по умолчанию */
-      background: #000;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
+      flex-direction: column;
       text-align: center;
+    }
+    #startPage {
+      display: flex;
+      background: #000;
+      color: #fff;
     }
     #startPage h1 {
       margin: 0;
-      font-size: 2em;
-      line-height: 1.2;
-    }
-    /* Красный жирный текст */
-    .redText {
+      font-size: 2.5em;
       color: red;
-      font-weight: bold;
     }
-    /* Белый жирный текст */
-    .whiteText {
+    #startPage p {
       color: white;
       font-weight: bold;
       margin-top: 1em;
@@ -61,19 +49,14 @@
       color: #fff;
       cursor: pointer;
     }
-    /* PIN-страница */
     #pinPage {
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
       background-size: cover;
-      display: none; /* по умолчанию скрыта */
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      display: none;
     }
     #pinContainer {
       position: absolute;
-      top: 40%;
-      width: 100%;
+      top: 45%;
       display: flex;
       justify-content: center;
     }
@@ -88,14 +71,10 @@
       color: #fff;
       caret-color: transparent;
     }
-    /* Страница отчётов */
     #reportPage {
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
       background-size: cover;
-      display: none; /* по умолчанию скрыта */
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      display: none;
     }
     #reportPage button {
       margin: 10px;
@@ -118,11 +97,10 @@
 <body onload="initializeApp()">
   <!-- Стартовая страница -->
   <div id="startPage" class="page">
-    <h1 class="redText">THE</h1>
-    <h1 class="redText">MARAUDER'S</h1>
-    <h1 class="redText">MAP</h1>
-    <br><br><br>
-    <p class="whiteText">торжественно клянись что замышляешь только шалость!</p>
+    <h1>THE</h1>
+    <h1>MARAUDER'S</h1>
+    <h1>MAP</h1>
+    <p>Торжественно клянись, что замышляешь только шалость!</p>
     <button onclick="goToPinPage()">Клянусь</button>
   </div>
   
@@ -146,21 +124,18 @@
   </div>
   
   <script>
-    // Гарантированная инициализация приложения при загрузке
     function initializeApp() {
-      document.getElementById('startPage').style.display = 'block';
+      document.getElementById('startPage').style.display = 'flex';
       document.getElementById('pinPage').style.display = 'none';
       document.getElementById('reportPage').style.display = 'none';
     }
 
-    // Переход со стартовой страницы на PIN-страницу
     function goToPinPage() {
       document.getElementById('startPage').style.display = 'none';
       document.getElementById('pinPage').style.display = 'flex';
       document.getElementById('pin1').focus();
     }
     
-    // Обработка ввода PIN
     function handlePinInput(input, nextId) {
       let val = input.value;
       if (val.length > 0) {
@@ -174,7 +149,6 @@
       }
     }
     
-    // Обработка Backspace
     function handleBackspace(event, input, prevId) {
       if (event.key === "Backspace") {
         input.dataset.value = "";
@@ -185,7 +159,6 @@
       }
     }
     
-    // Проверка PIN-кода
     function checkPIN() {
       const pin1 = document.getElementById("pin1").dataset.value || "";
       const pin2 = document.getElementById("pin2").dataset.value || "";
@@ -204,22 +177,20 @@
         document.getElementById("pin1").focus();
       }
     }
-    
-    function sendReport(reportId) {
-  fetch("https://script.google.com/macros/s/AKfycbwAUvaoB7z3X29aNAUXzIx4XmbODbWlf8iRE_vUq_QTALq_kHoQIbGTsFYVRHabwD2_/exec?reportId=" + reportId)
-    .then(response => response.json())
-    .then(data => {
-      if (data.error) {
-        alert("Ошибка: " + data.error);
-      } else {
-        alert(data.report);
-      }
-    })
-    .catch(error => {
-      alert("Ошибка получения данных: " + error);
-    });
-}
 
+    function sendReport(reportId) {
+      fetch("https://script.google.com/macros/s/AKfycbwAUvaoB7z3X29aNAUXzIx4XmbODbWlf8iRE_vUq_QTALq_kHoQIbGTsFYVRHabwD2_/exec?reportId=" + reportId)
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            alert("Ошибка: " + data.error);
+          } else {
+            alert(data.report);
+          }
+        })
+        .catch(error => {
+          alert("Ошибка получения данных: " + error);
+        });
     }
   </script>
 </body>
