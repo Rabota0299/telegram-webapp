@@ -140,7 +140,20 @@
   </div>
   
   <script>
-    const apiUrl = "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec";
+ // Ссылки на API для разных таблиц
+const apiMain = "https://script.google.com/macros/s/AKfycbwniV6ABaNSbsfRdS0k_zd6w-drod-msAPGH7eMAGOVgahU5XSuUTIwBcr7gikWGhAb/exec"; 
+const apiFinance = "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec"; 
+
+// Функция для отправки отчётов с правильным API
+function sendReport(reportId) {
+    let apiUrl = (reportId === 5) ? apiFinance : apiMain; // Если reportId = 5 → финансы, иначе обычные отчёты
+
+    fetch(`${apiUrl}?reportId=${reportId}`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('reportResult').innerHTML = data;
+        });
+}
 
     function initializeApp() {
       document.getElementById('startPage').style.display = 'flex';
