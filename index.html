@@ -258,37 +258,51 @@
     const apiUrl = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
     const apiUrlSpecial = "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec";
 
-function sendReport(reportId, event) {
-  let url = apiUrl;
-  if (reportId === 5) {
-    url = apiUrlSpecial;
-  }
+function openReport(reportId, reportTitle) {
+    // Скрываем меню отчетов
+    document.getElementById('reportPage').style.display = 'none';
 
-  const button = event.target; 
-  button.disabled = true; // Блокируем кнопку
-  document.getElementById('reportResult').innerHTML = `<span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>`;
+    // Показываем страницу отчета
+    document.getElementById('reportDetailsPage').style.display = 'flex';
 
-  fetch(`${url}?reportId=${reportId}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Ошибка сервера: ${response.status}`);
-      }
-      return response.text();
-    })
-    .then(data => {
-      let roundedData = data.replace(/\d+(\.\d+)?/g, match => Math.round(parseFloat(match)));
-      roundedData = roundedData.replace(/\n+/g, '\n').replace(/\n/g, '<br>');
-      roundedData = roundedData.replace(/🔄 <b>Разница со вчера<\/b>:<br>/, '🔄 <b>Разница со вчера</b>: ');
-      roundedData = roundedData.replace(/(<span style='color:red;'>[^<]+<\/span>)<br>(<span style='color:green;'>[^<]+<\/span>)/, "$1&nbsp;/&nbsp;$2");
+    // Устанавливаем заголовок отчета
+    document.getElementById('reportTitle').innerText = reportTitle;
 
-      document.getElementById('reportResult').innerHTML = roundedData.trim();
-    })
-    .catch(error => {
-      document.getElementById('reportResult').innerHTML = `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
-    })
-    .finally(() => {
-      button.disabled = false; // Разблокируем кнопку после завершения запроса
-    });
+    // Показываем сообщение "Добби отправлен..."
+    document.getElementById('reportResult').innerHTML = `<span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>`;
+
+    // Отправляем запрос к серверу
+    let url = (reportId === 5) ? apiUrlSpecial : apiUrl;
+
+    fetch(`${url}?reportId=${reportId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Ошибка сервера: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(data => {
+            let roundedData = data.replace(/\d+(\.\d+)?/g, match => Math.round(parseFloat(match)));
+            roundedData = roundedData.replace(/\n+/g, '\n').replace(/\n/g, '<br>');
+            roundedData = roundedData.replace(/🔄 <b>Разница со вчера<\/b>:<br>/, '🔄 <b>Разница со вчера</b>: ');
+            roundedData = roundedData.replace(/(<span style='color:red;'>[^<]+<\/span>)<br>(<span style='color:green;'>[^<]+<\/span>)/, "$1&nbsp;/&nbsp;$2");
+
+            document.getElementById('reportResult').innerHTML = roundedData.trim();
+        })
+        .catch(error => {
+            document.getElementById('reportResult').innerHTML = `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
+        });
+}
+
+function goBackToMenu() {
+    // Скрываем страницу отчета
+    document.getElementById('reportDetailsPage').style.display = 'none';
+
+    // Показываем меню отчетов
+    document.getElementById('reportPage').style.display = 'flex';
+
+    // Очищаем содержимое отчета
+    document.getElementById('reportResult').innerHTML = "";
 }
 
 
