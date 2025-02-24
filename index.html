@@ -204,11 +204,15 @@
     const apiUrl = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
     const apiUrlSpecial = "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec";
 
-function sendReport(reportId) {
+function sendReport(reportId, event) {
   let url = apiUrl;
   if (reportId === 5) {
     url = apiUrlSpecial;
   }
+
+  const button = event.target; 
+  button.disabled = true; // Блокируем кнопку
+  document.getElementById('reportResult').innerHTML = `<span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>`;
 
   fetch(`${url}?reportId=${reportId}`)
     .then(response => {
@@ -218,7 +222,6 @@ function sendReport(reportId) {
       return response.text();
     })
     .then(data => {
-      // Округляем числа
       let roundedData = data.replace(/\d+(\.\d+)?/g, match => Math.round(parseFloat(match)));
       roundedData = roundedData.replace(/\n+/g, '\n').replace(/\n/g, '<br>');
       roundedData = roundedData.replace(/🔄 <b>Разница со вчера<\/b>:<br>/, '🔄 <b>Разница со вчера</b>: ');
@@ -227,7 +230,10 @@ function sendReport(reportId) {
       document.getElementById('reportResult').innerHTML = roundedData.trim();
     })
     .catch(error => {
-      document.getElementById('reportResult').innerHTML = `<span style="color:red;">Ошибка загрузки данных: ${error.message}</span>`;
+      document.getElementById('reportResult').innerHTML = `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
+    })
+    .finally(() => {
+      button.disabled = false; // Разблокируем кнопку после завершения запроса
     });
 }
 
