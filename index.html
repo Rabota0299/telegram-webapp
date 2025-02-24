@@ -131,19 +131,16 @@
   </div>
   
   <div id="reportPage" class="page">
-    <button onclick="sendReport(1)">Тотал сегодня</button>
-    <button onclick="sendReport(2)">Топ агентов сегодня</button>
-    <button onclick="sendReport(3)">Тотал по месяцу</button>
-    <button onclick="sendReport(4)">Просто кнопка</button>
-    <button onclick="sendReport(5)">Не нажимай, тут порно</button>
+    <button onclick="sendReport(3)">Финансовый отчёт</button>
+    <button onclick="sendReport(5)">Изменение показателей</button>
     <div id="reportResult"></div>
   </div>
   
   <script>
-    const apiUrl = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
+    const apiUrl = "https://script.google.com/macros/s/AKfycbwniV6ABaNSbsfRdS0k_zd6w-drod-msAPGH7eMAGOVgahU5XSuUTIwBcr7gikWGhAb/exec";
 
     function initializeApp() {
-      document.getElementById('startPage').style.display = 'block';
+      document.getElementById('startPage').style.display = 'flex';
       document.getElementById('pinPage').style.display = 'none';
       document.getElementById('reportPage').style.display = 'none';
     }
@@ -200,7 +197,7 @@
       fetch(`${apiUrl}?reportId=${reportId}`)
         .then(response => response.text())
         .then(data => {
-          document.getElementById('reportResult').innerText = data;
+            document.getElementById('reportResult').innerHTML = data;
         });
     }
   </script>
