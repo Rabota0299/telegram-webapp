@@ -204,13 +204,14 @@
   <script>
     /* Инициализация приложения */
     function initializeApp() {
-      // Стартовая страница видна
-      document.getElementById('startPage').style.display = 'block';
-      // Остальные скрыты
-      document.getElementById('pinPage').style.display = 'none';
-      document.getElementById('reportPage').style.display = 'none';
-      document.getElementById('reportDetailsPage').style.display = 'none';
-    }
+  // Стартовая страница видна (используем flex)
+  document.getElementById('startPage').style.display = 'flex';
+  // Остальные скрыты
+  document.getElementById('pinPage').style.display = 'none';
+  document.getElementById('reportPage').style.display = 'none';
+  document.getElementById('reportDetailsPage').style.display = 'none';
+}
+
 
     function goToPinPage() {
       // Скрываем startPage
