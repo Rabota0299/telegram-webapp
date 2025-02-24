@@ -330,6 +330,21 @@ function openReport(reportId, reportTitle) {
             document.getElementById('reportResult').innerHTML = `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
         });
 }
+function goBackToMenu() {
+    // Скрываем страницу отчета
+    let reportDetailsPage = document.getElementById('reportDetailsPage');
+    reportDetailsPage.style.opacity = "0";
+    setTimeout(() => {
+        reportDetailsPage.style.display = "none";
+    }, 300); // Ждем 300 мс, чтобы плавно скрыть страницу
+
+    // Показываем меню отчетов
+    let reportPage = document.getElementById('reportPage');
+    reportPage.style.display = "flex";
+    setTimeout(() => {
+        reportPage.style.opacity = "1";
+    }, 100);
+}
 
 
   </script>
