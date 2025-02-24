@@ -20,7 +20,15 @@
       height: 100vh;
       box-sizing: border-box;
       display: none;
+      opacity: 0; /* Для плавной анимации */
+      transition: opacity 0.3s ease-in-out; /* Плавная анимация */
     }
+
+    /* Когда у элемента есть "display: flex" через inline-стиль, включаем opacity */
+    .page[style*="display: flex"] {
+      opacity: 1;
+    }
+
     #startPage {
       display: flex;
       background: #000;
@@ -50,6 +58,7 @@
       color: #fff;
       cursor: pointer;
     }
+
     #pinPage {
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
       background-size: cover;
@@ -76,16 +85,15 @@
       caret-color: transparent;
     }
 
-    /* ИСПРАВЛЕНО — добавили display: none; */
+    /* Меню отчетов по умолчанию скрыто */
     #reportPage {
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
       background-size: cover;
-      display: none; /* Скрываем меню отчетов при загрузке */
+      display: none; 
       flex-direction: column;
       justify-content: center;
       align-items: center;
     }
-
     #reportPage button {
       margin: 10px;
       padding: 12px 20px;
@@ -99,7 +107,7 @@
       transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    /* .report-title — ИСПРАВЛЕНО */
+    /* Заголовок в отчете */
     .report-title {
       color: white;
       font-size: 1.5em; /* Уменьшаем размер заголовка */
@@ -147,19 +155,10 @@
       margin-left: auto;
       margin-right: auto;
     }
-
-    .page {
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out; /* Плавный переход */
-}
-
-.page[style*="display: flex"] {
-    opacity: 1;
-}
-
   </style>
 </head>
 <body onload="initializeApp()">
+  <!-- Стартовая страница -->
   <div id="startPage" class="page">
     <h1 class="redText">THE</h1>
     <h1 class="redText">MARAUDER'S</h1>
@@ -169,6 +168,7 @@
     <button onclick="goToPinPage()">Клянусь</button>
   </div>
   
+  <!-- Страница ввода пин-кода -->
   <div id="pinPage" class="page">
     <div id="pinContainer">
       <input type="text" id="pin1" maxlength="1" inputmode="numeric" pattern="[0-9]*"
@@ -187,30 +187,35 @@
   
   <!-- Меню отчетов -->
   <div id="reportPage" class="page">
-      <button onclick="openReport(1, 'Тотал сегодня')">Тотал сегодня</button>
-      <button onclick="openReport(2, 'Топ агентов сегодня')">Топ агентов сегодня</button>
-      <button onclick="openReport(3, 'Тотал по месяцу')">Тотал по месяцу</button>
-      <button onclick="openReport(4, 'Просто кнопка')">Просто кнопка</button>
-      <button onclick="openReport(5, 'Не нажимай, тут порно')">Не нажимай, тут порно</button>
+    <button onclick="openReport(1, 'Тотал сегодня')">Тотал сегодня</button>
+    <button onclick="openReport(2, 'Топ агентов сегодня')">Топ агентов сегодня</button>
+    <button onclick="openReport(3, 'Тотал по месяцу')">Тотал по месяцу</button>
+    <button onclick="openReport(4, 'Просто кнопка')">Просто кнопка</button>
+    <button onclick="openReport(5, 'Не нажимай, тут порно')">Не нажимай, тут порно</button>
   </div>
 
-  <!-- Страница отчета (скрыта по умолчанию) -->
+  <!-- Страница деталей отчета -->
   <div id="reportDetailsPage" class="page">
-      <h1 id="reportTitle" class="report-title"></h1>
-      <div id="reportResult" class="report-content"></div>
-      <button onclick="goBackToMenu()">Назад</button>
+    <h1 id="reportTitle" class="report-title"></h1>
+    <div id="reportResult" class="report-content"></div>
+    <button onclick="goBackToMenu()">Назад</button>
   </div>
 
-  <!-- Скрипты приложения -->
   <script>
+    /* Инициализация приложения */
     function initializeApp() {
+      // Стартовая страница видна
       document.getElementById('startPage').style.display = 'block';
+      // Остальные скрыты
       document.getElementById('pinPage').style.display = 'none';
       document.getElementById('reportPage').style.display = 'none';
+      document.getElementById('reportDetailsPage').style.display = 'none';
     }
 
     function goToPinPage() {
+      // Скрываем startPage
       document.getElementById('startPage').style.display = 'none';
+      // Показываем pinPage
       document.getElementById('pinPage').style.display = 'flex';
       document.getElementById('pin1').focus();
     }
@@ -244,6 +249,7 @@
       const pin3 = document.getElementById("pin3").dataset.value || "";
       const pin4 = document.getElementById("pin4").dataset.value || "";
       const enteredPIN = pin1 + pin2 + pin3 + pin4;
+
       if (enteredPIN === "2402") {
         document.getElementById('pinPage').style.display = 'none';
         document.getElementById('reportPage').style.display = 'flex';
@@ -258,107 +264,127 @@
     }
   </script>
   
-  <!-- Новый скрипт для запросов к серверу -->
+  <!-- Скрипт для запросов к серверу -->
   <script>
     const apiUrl = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
     const apiUrlSpecial = "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec";
 
-function openReport(reportId, reportTitle) {
-    // Устанавливаем заголовок отчета
-    document.getElementById('reportTitle').innerText = reportTitle;
+    /* 
+      Улучшенный openReport(): 
+      - Плавно скрываем меню отчетов 
+      - Плавно показываем страницу отчета
+    */
+    function openReport(reportId, reportTitle) {
+      // Заголовок отчета
+      document.getElementById('reportTitle').innerText = reportTitle;
 
-    // Показываем страницу отчета
-    document.getElementById('reportDetailsPage').style.display = 'flex';
+      // Предварительное сообщение
+      document.getElementById('reportResult').innerHTML =
+        `<span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>`;
 
-    // Скрываем меню отчетов
-    document.getElementById('reportPage').style.display = 'none';
+      let reportDetailsPage = document.getElementById('reportDetailsPage');
+      let reportPage = document.getElementById('reportPage');
 
-    // Показываем сообщение "Добби отправлен..."
-    document.getElementById('reportResult').innerHTML = `<span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>`;
+      // Плавно скрываем меню отчетов
+      reportPage.style.opacity = "0";
+      setTimeout(() => {
+          // После анимации скрываем полностью
+          reportPage.style.display = "none";
 
-    // Определяем, какой URL использовать
-    let url = (reportId === 5) ? apiUrlSpecial : apiUrl;
+          // Плавно показываем страницу отчета
+          reportDetailsPage.style.display = "flex";
+          setTimeout(() => {
+              reportDetailsPage.style.opacity = "1";
+          }, 50); 
+      }, 300); // 300 мс — время совпадает с transition
 
-    fetch(`${url}?reportId=${reportId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Ошибка сервера: ${response.status}`);
-            }
-            return response.text();
-        })
-        .then(data => {
-            // Проверяем, что данные не пустые
-            if (!data || data.trim() === "") {
-                throw new Error("Получены пустые данные");
-            }
+      // Определяем, какой URL использовать
+      let url = (reportId === 5) ? apiUrlSpecial : apiUrl;
 
-            // 🔥 Обрабатываем "Тотал по месяцу" (reportId === 3)
-            if (reportId === 3) {
-                let rows = data.trim().split("\n"); // Разбиваем на строки
-                let totalSum = 0;
-                let formattedRows = [];
+      fetch(`${url}?reportId=${reportId}`)
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error(`Ошибка сервера: ${response.status}`);
+              }
+              return response.text();
+          })
+          .then(data => {
+              // Проверяем, что данные не пустые
+              if (!data || data.trim() === "") {
+                  throw new Error("Получены пустые данные");
+              }
 
-                rows.forEach(row => {
-                    let columns = row.split("\t"); // Разделяем столбцы (по табуляции)
-                    if (columns.length >= 2) {
-                        let manager = columns[0].trim();
-                        let sum = parseFloat(columns[1].replace(/\s/g, "")) || 0; // Убираем пробелы в числе
-                        totalSum += sum;
-                        formattedRows.push(`<b>${manager}</b>: ${sum.toLocaleString()}`);
-                    }
-                });
+              // 🔥 Обработка "Тотал по месяцу" (reportId === 3) как пример
+              if (reportId === 3) {
+                  let rows = data.trim().split("\n"); 
+                  let totalSum = 0;
+                  let formattedRows = [];
 
-                // Формируем HTML-отчет
-                let formattedData = `
-                    <div style="font-size: 1.5em; text-align: center; margin-bottom: 10px;">
-                        💰 <b>Общий тотал за месяц:</b> ${totalSum.toLocaleString()}
-                    </div>
-                    <div style="text-align: left; font-size: 1.2em; padding: 10px;">
-                        ${formattedRows.join("<br>")}
-                    </div>
-                `;
+                  rows.forEach(row => {
+                      let columns = row.split("\t"); 
+                      if (columns.length >= 2) {
+                          let manager = columns[0].trim();
+                          let sum = parseFloat(columns[1].replace(/\s/g, "")) || 0; 
+                          totalSum += sum;
+                          formattedRows.push(`<b>${manager}</b>: ${sum.toLocaleString()}`);
+                      }
+                  });
 
-                document.getElementById('reportResult').innerHTML = formattedData;
-                return;
-            }
+                  let formattedData = `
+                      <div style="font-size: 1.5em; text-align: center; margin-bottom: 10px;">
+                          💰 <b>Общий тотал за месяц:</b> ${totalSum.toLocaleString()}
+                      </div>
+                      <div style="text-align: left; font-size: 1.2em; padding: 10px;">
+                          ${formattedRows.join("<br>")}
+                      </div>
+                  `;
+                  document.getElementById('reportResult').innerHTML = formattedData;
+                  return;
+              }
 
-            // 🟢 Обычная обработка для остальных отчетов
-            let cleanedData = data.replace(/\bundefined\b/g, ""); // Убираем все "undefined"
-            cleanedData = cleanedData.replace(/\d+(\.\d+)?/g, match => {
-                return isNaN(parseFloat(match)) ? match : Math.round(parseFloat(match));
-            });
+              // Обычная обработка для остальных отчетов
+              let cleanedData = data.replace(/\bundefined\b/g, "");
+              cleanedData = cleanedData.replace(/\d+(\.\d+)?/g, match => {
+                  return isNaN(parseFloat(match)) ? match : Math.round(parseFloat(match));
+              });
 
-            // Исправляем "Разницу со вчера", чтобы числа были в одной строке
-            cleanedData = cleanedData.replace(/🔄 <b>Разница со вчера<\/b>:/, '🔄 <b>Разница со вчера</b>: ');
+              // Исправляем "Разницу со вчера"
+              cleanedData = cleanedData.replace(/🔄 <b>Разница со вчера<\/b>:/, '🔄 <b>Разница со вчера</b>: ');
+              // Добавляем неразрывный пробел
+              cleanedData = cleanedData.replace(
+                /(<span style='color:red;'>[^<]+<\/span>)(<span style='color:green;'>[^<]+<\/span>)/,
+                "$1&nbsp;/&nbsp;$2"
+              );
 
-            // Добавляем неразрывный пробел между числами
-            cleanedData = cleanedData.replace(/(<span style='color:red;'>[^<]+<\/span>)(<span style='color:green;'>[^<]+<\/span>)/, "$1&nbsp;/&nbsp;$2");
+              document.getElementById('reportResult').innerHTML = cleanedData.trim();
+          })
+          .catch(error => {
+              document.getElementById('reportResult').innerHTML =
+                `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
+          });
+    }
 
-            document.getElementById('reportResult').innerHTML = cleanedData.trim();
-        })
-        .catch(error => {
-            document.getElementById('reportResult').innerHTML = `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
-        });
-}
-function goBackToMenu() {
-    let reportDetailsPage = document.getElementById('reportDetailsPage');
-    let reportPage = document.getElementById('reportPage');
+    /*
+      Улучшенный goBackToMenu():
+      - Плавное скрытие страницы отчета
+      - Возвращение в меню отчетов с анимацией
+    */
+    function goBackToMenu() {
+      let reportDetailsPage = document.getElementById('reportDetailsPage');
+      let reportPage = document.getElementById('reportPage');
 
-    // Плавно скрываем отчет
-    reportDetailsPage.style.opacity = "0";
-    setTimeout(() => {
-        reportDetailsPage.style.display = "none";
+      // Плавно скрываем страницу отчета
+      reportDetailsPage.style.opacity = "0";
+      setTimeout(() => {
+          reportDetailsPage.style.display = "none";
 
-        // После скрытия включаем меню отчетов
-        reportPage.style.display = "flex";
-        setTimeout(() => {
-            reportPage.style.opacity = "1";
-        }, 10); // Задержка, чтобы успел сработать display
-    }, 300); // Ждем 300 мс перед скрытием
-}
-
-
-
+          // Показываем меню отчетов
+          reportPage.style.display = "flex";
+          setTimeout(() => {
+              reportPage.style.opacity = "1";
+          }, 50); 
+      }, 300); // 300 мс перед скрытием
+    }
   </script>
 </body>
 </html>
