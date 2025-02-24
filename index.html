@@ -101,22 +101,27 @@
       box-shadow: 0 6px 10px rgba(0,0,0,0.6);
 
       .report-title {
-        color: white;
+        color: white; /* Делаем текст белым */
         font-size: 2em;
         text-align: center;
-        margin-top: 40px; /* Делаем заголовок ниже */
+        margin-top: 40px;
+        font-weight: bold; /* Делаем текст жирным */
       }
 
+
       .report-content {
-        color: white;
-        text-align: center;
-        padding: 20px;
+        color: white; /* Делаем текст белым */
+        background: rgba(255, 255, 255, 0.1); /* Легкая прозрачная подложка */
+        padding: 15px;
         max-width: 80%;
         flex-grow: 1;
         display: flex;
         justify-content: center;
         align-items: center;
+        text-align: center;
+        border-radius: 10px; /* Закругляем углы */
       }
+
 
       #reportDetailsPage {
         background: black;
@@ -167,8 +172,11 @@
   background: red;
   color: #fff;
   cursor: pointer;
-  margin-bottom: 20px; /* Отступ снизу */
+  margin-bottom: 20px;
+  display: block;
+  margin: auto; /* Центрируем кнопку */
 }
+
 
     #reportResult {
       margin-top: 10px;
