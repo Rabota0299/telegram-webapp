@@ -211,11 +211,16 @@
   fetch(`${url}?reportId=${reportId}`)
     .then(response => response.text())
     .then(data => {
-      // Удаляем лишние пустые строки перед разметкой <br>
-      let formattedData = data.replace(/\n+/g, '\n'); // Оставляем только один перенос
-      formattedData = formattedData.replace(/\n/g, '<br>'); // Заменяем \n на <br>
+      // Округляем все числа в тексте
+      let roundedData = data.replace(/\d+(\.\d+)?/g, match => {
+        return Math.round(parseFloat(match));
+      });
 
-      document.getElementById('reportResult').innerHTML = formattedData.trim(); // Убираем лишние пробелы и переносы в начале и конце
+      // Удаляем лишние пустые строки
+      roundedData = roundedData.replace(/\n+/g, '\n'); // Оставляем только один перенос
+      roundedData = roundedData.replace(/\n/g, '<br>'); // Заменяем \n на <br>
+
+      document.getElementById('reportResult').innerHTML = roundedData.trim(); // Убираем лишние пробелы и переносы
     });
 }
 
