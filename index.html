@@ -141,6 +141,7 @@
   
   <script>
     const apiUrl = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
+    const apiUrlSpecial = "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec";
 
     function initializeApp() {
       document.getElementById('startPage').style.display = 'block';
@@ -154,66 +155,18 @@
       document.getElementById('pin1').focus();
     }
     
-    function handlePinInput(input, nextId) {
-      let val = input.value;
-      if (val.length > 0) {
-        input.dataset.value = val;
-        input.value = "💲";
-        if (nextId) {
-          document.getElementById(nextId).focus();
-        } else {
-          checkPIN();
-        }
+    function sendReport(reportId) {
+      let url = apiUrl;
+      if (reportId === 5) {
+        url = apiUrlSpecial;
       }
-    }
-    
-    function handleBackspace(event, input, prevId) {
-      if (event.key === "Backspace") {
-        input.dataset.value = "";
-        input.value = "";
-        if (prevId) {
-          document.getElementById(prevId).focus();
-        }
-      }
-    }
-    
-    function checkPIN() {
-      const pin1 = document.getElementById("pin1").dataset.value || "";
-      const pin2 = document.getElementById("pin2").dataset.value || "";
-      const pin3 = document.getElementById("pin3").dataset.value || "";
-      const pin4 = document.getElementById("pin4").dataset.value || "";
-      const enteredPIN = pin1 + pin2 + pin3 + pin4;
-      if (enteredPIN === "2402") {
-        document.getElementById('pinPage').style.display = 'none';
-        document.getElementById('reportPage').style.display = 'flex';
-      } else {
-        alert("Неверный PIN!");
-        ["pin1", "pin2", "pin3", "pin4"].forEach(id => {
-          document.getElementById(id).value = "";
-          document.getElementById(id).dataset.value = "";
+      
+      fetch(`${url}?reportId=${reportId}`)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('reportResult').innerText = data;
         });
-        document.getElementById("pin1").focus();
-      }
     }
-    
-  <script>
-  const apiUrl = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
-  const apiUrlSpecial = "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec";
-
-  function sendReport(reportId) {
-    let url = apiUrl;
-    if (reportId === 5) {
-      url = apiUrlSpecial;
-    }
-    
-    fetch(`${url}?reportId=${reportId}`)
-      .then(response => response.text())
-      .then(data => {
-        document.getElementById('reportResult').innerText = data;
-      });
-  }
-</script>
-
   </script>
 </body>
 </html>
