@@ -131,13 +131,16 @@
   </div>
   
   <div id="reportPage" class="page">
-    <button onclick="sendReport(3)">Финансовый отчёт</button>
-    <button onclick="sendReport(5)">Изменение показателей</button>
+    <button onclick="sendReport(1)">Тотал сегодня</button>
+    <button onclick="sendReport(2)">Топ агентов сегодня</button>
+    <button onclick="sendReport(3)">Тотал по месяцу</button>
+    <button onclick="sendReport(4)">Финансовый отчёт</button>
+    <button onclick="sendReport(5)">Не нажимай, тут порно</button>
     <div id="reportResult"></div>
   </div>
   
   <script>
-    const apiUrl = "https://script.google.com/macros/s/AKfycbwniV6ABaNSbsfRdS0k_zd6w-drod-msAPGH7eMAGOVgahU5XSuUTIwBcr7gikWGhAb/exec";
+    const apiUrl = "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec";
 
     function initializeApp() {
       document.getElementById('startPage').style.display = 'flex';
@@ -175,11 +178,7 @@
     }
     
     function checkPIN() {
-      const pin1 = document.getElementById("pin1").dataset.value || "";
-      const pin2 = document.getElementById("pin2").dataset.value || "";
-      const pin3 = document.getElementById("pin3").dataset.value || "";
-      const pin4 = document.getElementById("pin4").dataset.value || "";
-      const enteredPIN = pin1 + pin2 + pin3 + pin4;
+      const enteredPIN = ["pin1", "pin2", "pin3", "pin4"].map(id => document.getElementById(id).dataset.value || "").join("");
       if (enteredPIN === "2402") {
         document.getElementById('pinPage').style.display = 'none';
         document.getElementById('reportPage').style.display = 'flex';
