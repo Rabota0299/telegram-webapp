@@ -18,6 +18,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
+      box-sizing: border-box;
       display: none;
     }
     #startPage {
@@ -85,18 +86,6 @@
       color: #fff;
       cursor: pointer;
       box-shadow: 0 4px 6px rgba(0,0,0,0.4);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    #reportPage button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 10px rgba(0,0,0,0.6);
-    }
-    #reportResult {
-      color: white;
-      margin-top: 20px;
-      padding: 10px;
-      font-size: 1.2em;
-      text-align: center;
     }
   </style>
 </head>
@@ -109,39 +98,32 @@
     <p class="whiteText">торжественно клянись что замышляешь только шалость!</p>
     <button onclick="goToPinPage()">Клянусь</button>
   </div>
-  
   <div id="pinPage" class="page">
     <div id="pinContainer">
-      <input type="text" id="pin1" maxlength="1" inputmode="numeric" oninput="handlePinInput(this, 'pin2')" autofocus />
-      <input type="text" id="pin2" maxlength="1" inputmode="numeric" oninput="handlePinInput(this, 'pin3')" onkeydown="handleBackspace(event, this, 'pin1')" />
-      <input type="text" id="pin3" maxlength="1" inputmode="numeric" oninput="handlePinInput(this, 'pin4')" onkeydown="handleBackspace(event, this, 'pin2')" />
-      <input type="text" id="pin4" maxlength="1" inputmode="numeric" onkeydown="handleBackspace(event, this, 'pin3')" oninput="handlePinInput(this, '')" />
+      <input type="text" id="pin1" maxlength="1" oninput="handlePinInput(this, 'pin2')" autofocus />
+      <input type="text" id="pin2" maxlength="1" oninput="handlePinInput(this, 'pin3')" />
+      <input type="text" id="pin3" maxlength="1" oninput="handlePinInput(this, 'pin4')" />
+      <input type="text" id="pin4" maxlength="1" oninput="handlePinInput(this, '')" />
     </div>
   </div>
-  
   <div id="reportPage" class="page">
     <button onclick="sendReport(1)">Тотал сегодня</button>
     <button onclick="sendReport(2)">Топ агентов сегодня</button>
+    <button onclick="sendReport(3)">Тотал по месяцу</button>
+    <button onclick="sendReport(4)">Просто кнопка</button>
     <button onclick="sendReport(5)">Не нажимай, тут порно</button>
-    <div id="reportResult"></div>
   </div>
-  
   <script>
-    const apiMain = "https://script.google.com/macros/s/AKfycbwniV6ABaNSbsfRdS0k_zd6w-drod-msAPGH7eMAGOVgahU5XSuUTIwBcr7gikWGhAb/exec"; 
-    const apiFinance = "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec"; 
-
+    const apiUrl = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
     function initializeApp() {
       document.getElementById('startPage').style.display = 'flex';
       document.getElementById('pinPage').style.display = 'none';
       document.getElementById('reportPage').style.display = 'none';
     }
-
     function goToPinPage() {
       document.getElementById('startPage').style.display = 'none';
       document.getElementById('pinPage').style.display = 'flex';
-      document.getElementById('pin1').focus();
     }
-
     function handlePinInput(input, nextId) {
       let val = input.value;
       if (val.length > 0) {
@@ -154,24 +136,25 @@
         }
       }
     }
-
     function checkPIN() {
-      const pin = ["pin1", "pin2", "pin3", "pin4"].map(id => document.getElementById(id).dataset.value || "").join("");
+      const pin = ['pin1', 'pin2', 'pin3', 'pin4'].map(id => document.getElementById(id).dataset.value || '').join('');
       if (pin === "2402") {
         document.getElementById('pinPage').style.display = 'none';
         document.getElementById('reportPage').style.display = 'flex';
       } else {
         alert("Неверный PIN!");
-        ["pin1", "pin2", "pin3", "pin4"].forEach(id => document.getElementById(id).value = "");
+        ['pin1', 'pin2', 'pin3', 'pin4'].forEach(id => {
+          document.getElementById(id).value = "";
+          document.getElementById(id).dataset.value = "";
+        });
         document.getElementById("pin1").focus();
       }
     }
-
-    function sendReport(reportId) {
-      let apiUrl = (reportId === 5) ? apiFinance : apiMain;
-      fetch(`${apiUrl}?reportId=${reportId}`)
+    function sendReport(id) {
+      fetch(`${apiUrl}?id=${id}`)
         .then(response => response.text())
-        .then(data => { document.getElementById('reportResult').innerHTML = data; });
+        .then(data => alert(data))
+        .catch(error => alert("Ошибка получения отчёта"));
     }
   </script>
 </body>
