@@ -30,8 +30,16 @@
       align-items: center;
       text-align: center;
     }
-    .redText { color: red; font-weight: bold; }
-    .whiteText { color: white; font-weight: bold; margin-top: 1em; }
+    .redText {
+      color: red;
+      font-weight: bold;
+      font-size: 2em;
+    }
+    .whiteText {
+      color: white;
+      font-weight: bold;
+      margin-top: 1em;
+    }
     #startPage button {
       margin-top: 20px;
       padding: 12px 20px;
@@ -86,6 +94,20 @@
       color: #fff;
       cursor: pointer;
       box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    #reportPage button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 10px rgba(0,0,0,0.6);
+    }
+    #reportResult {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border-radius: 5px;
+      max-width: 80%;
+      text-align: center;
     }
   </style>
 </head>
@@ -98,32 +120,40 @@
     <p class="whiteText">торжественно клянись что замышляешь только шалость!</p>
     <button onclick="goToPinPage()">Клянусь</button>
   </div>
+  
   <div id="pinPage" class="page">
     <div id="pinContainer">
-      <input type="text" id="pin1" maxlength="1" oninput="handlePinInput(this, 'pin2')" autofocus />
-      <input type="text" id="pin2" maxlength="1" oninput="handlePinInput(this, 'pin3')" />
-      <input type="text" id="pin3" maxlength="1" oninput="handlePinInput(this, 'pin4')" />
-      <input type="text" id="pin4" maxlength="1" oninput="handlePinInput(this, '')" />
+      <input type="text" id="pin1" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin2')" autofocus />
+      <input type="text" id="pin2" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin3')" onkeydown="handleBackspace(event, this, 'pin1')" />
+      <input type="text" id="pin3" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin4')" onkeydown="handleBackspace(event, this, 'pin2')" />
+      <input type="text" id="pin4" maxlength="1" inputmode="numeric" pattern="[0-9]*" onkeydown="handleBackspace(event, this, 'pin3')" oninput="handlePinInput(this, '')" />
     </div>
   </div>
+  
   <div id="reportPage" class="page">
     <button onclick="sendReport(1)">Тотал сегодня</button>
     <button onclick="sendReport(2)">Топ агентов сегодня</button>
     <button onclick="sendReport(3)">Тотал по месяцу</button>
     <button onclick="sendReport(4)">Просто кнопка</button>
     <button onclick="sendReport(5)">Не нажимай, тут порно</button>
+    <div id="reportResult"></div>
   </div>
+  
   <script>
-    const apiUrl = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+    const apiUrl = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
+
     function initializeApp() {
-      document.getElementById('startPage').style.display = 'flex';
+      document.getElementById('startPage').style.display = 'block';
       document.getElementById('pinPage').style.display = 'none';
       document.getElementById('reportPage').style.display = 'none';
     }
+
     function goToPinPage() {
       document.getElementById('startPage').style.display = 'none';
       document.getElementById('pinPage').style.display = 'flex';
+      document.getElementById('pin1').focus();
     }
+    
     function handlePinInput(input, nextId) {
       let val = input.value;
       if (val.length > 0) {
@@ -136,25 +166,42 @@
         }
       }
     }
+    
+    function handleBackspace(event, input, prevId) {
+      if (event.key === "Backspace") {
+        input.dataset.value = "";
+        input.value = "";
+        if (prevId) {
+          document.getElementById(prevId).focus();
+        }
+      }
+    }
+    
     function checkPIN() {
-      const pin = ['pin1', 'pin2', 'pin3', 'pin4'].map(id => document.getElementById(id).dataset.value || '').join('');
-      if (pin === "2402") {
+      const pin1 = document.getElementById("pin1").dataset.value || "";
+      const pin2 = document.getElementById("pin2").dataset.value || "";
+      const pin3 = document.getElementById("pin3").dataset.value || "";
+      const pin4 = document.getElementById("pin4").dataset.value || "";
+      const enteredPIN = pin1 + pin2 + pin3 + pin4;
+      if (enteredPIN === "2402") {
         document.getElementById('pinPage').style.display = 'none';
         document.getElementById('reportPage').style.display = 'flex';
       } else {
         alert("Неверный PIN!");
-        ['pin1', 'pin2', 'pin3', 'pin4'].forEach(id => {
+        ["pin1", "pin2", "pin3", "pin4"].forEach(id => {
           document.getElementById(id).value = "";
           document.getElementById(id).dataset.value = "";
         });
         document.getElementById("pin1").focus();
       }
     }
-    function sendReport(id) {
-      fetch(`${apiUrl}?id=${id}`)
+    
+    function sendReport(reportId) {
+      fetch(`${apiUrl}?reportId=${reportId}`)
         .then(response => response.text())
-        .then(data => alert(data))
-        .catch(error => alert("Ошибка получения отчёта"));
+        .then(data => {
+          document.getElementById('reportResult').innerText = data;
+        });
     }
   </script>
 </body>
