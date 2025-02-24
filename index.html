@@ -278,9 +278,9 @@
         })
         .then(data => {
             let roundedData = data.replace(/\d+(\.\d+)?/g, match => Math.round(parseFloat(match)));
-            roundedData = roundedData.replace(/\n+/g, '\n').replace(/\n/g, '<br>');
-            roundedData = roundedData.replace(/🔄 <b>Разница со вчера<\/b>:<br>/, '🔄 <b>Разница со вчера</b>: ');
-            roundedData = roundedData.replace(/(<span style='color:red;'>[^<]+<\/span>)<br>(<span style='color:green;'>[^<]+<\/span>)/, "$1&nbsp;/&nbsp;$2");
+            roundedData = roundedData.replace(/\n+/g, '\n').replace(/\n/g);
+            roundedData = roundedData.replace(/🔄 <b>Разница со вчера<\/b>:/, '🔄 <b>Разница со вчера</b>: ');
+            roundedData = roundedData.replace(/(<span style='color:red;'>[^<]+<\/span>)(<span style='color:green;'>[^<]+<\/span>)/, "$1&nbsp;/&nbsp;$2");
 
             // 🔥 Отдельная обработка отчета №5 (если `reportId === 5`)
             if (reportId === 5) {
