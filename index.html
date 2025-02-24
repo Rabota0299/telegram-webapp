@@ -211,7 +211,7 @@
       fetch(`${url}?reportId=${reportId}`)
         .then(response => response.text())
         .then(data => {
-          document.getElementById('reportResult').innerText = data;
+           document.getElementById('reportResult').innerHTML = roundedData;
         });
     }
   </script>
