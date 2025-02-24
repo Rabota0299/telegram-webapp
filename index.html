@@ -141,15 +141,22 @@
     </div>
   </div>
   
-  <div id="reportPage" class="page">
-    <button onclick="sendReport(1, event)">Тотал сегодня</button>
-    <button onclick="sendReport(2, event)">Топ агентов сегодня</button>
-    <button onclick="sendReport(3, event)">Тотал по месяцу</button>
-    <button onclick="sendReport(4, event)">Просто кнопка</button>
-    <button onclick="sendReport(5, event)">Не нажимай, тут порно</button>
+  <!-- Меню отчетов -->
+<div id="reportPage" class="page">
+    <button onclick="openReport(1, 'Тотал сегодня')">Тотал сегодня</button>
+    <button onclick="openReport(2, 'Топ агентов сегодня')">Топ агентов сегодня</button>
+    <button onclick="openReport(3, 'Тотал по месяцу')">Тотал по месяцу</button>
+    <button onclick="openReport(4, 'Просто кнопка')">Просто кнопка</button>
+    <button onclick="openReport(5, 'Не нажимай, тут порно')">Не нажимай, тут порно</button>
+</div>
 
-    <div id="reportResult"></div>
-  </div>
+<!-- Страница отчета (скрыта по умолчанию) -->
+<div id="reportDetailsPage" class="page">
+    <h1 id="reportTitle" class="report-title"></h1>
+    <div id="reportResult" class="report-content"></div>
+    <button onclick="goBackToMenu()">Назад</button>
+</div>
+
   
   <!-- Скрипты приложения -->
   <script>
