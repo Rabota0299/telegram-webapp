@@ -356,20 +356,15 @@
 
 
               // Обычная обработка для остальных отчетов
-              let cleanedData = data.replace(/\bundefined\b/g, "");
-              cleanedData = cleanedData.replace(/\d+(\.\d+)?/g, match => {
-                  return isNaN(parseFloat(match)) ? match : Math.round(parseFloat(match));
-              });
+              let cleanedData = data
+  .replace(/\bundefined\b/g, "") // убираем undefined
+  .replace(/🔄 <b>Разница со вчера<\/b>:/, '🔄 <b>Разница со вчера</b>: ')
+  // + если хочешь оставлять красную/зелёную разницу с пробелом
+  .replace(/(<span style='color:red;'>[^<]+<\/span>)(<span style='color:green;'>[^<]+<\/span>)/,
+           "$1&nbsp;/&nbsp;$2");
 
-              // Исправляем "Разницу со вчера"
-              cleanedData = cleanedData.replace(/🔄 <b>Разница со вчера<\/b>:/, '🔄 <b>Разница со вчера</b>: ');
-              // Добавляем неразрывный пробел
-              cleanedData = cleanedData.replace(
-                /(<span style='color:red;'>[^<]+<\/span>)(<span style='color:green;'>[^<]+<\/span>)/,
-                "$1&nbsp;/&nbsp;$2"
-              );
-
-              document.getElementById('reportResult').innerHTML = cleanedData.trim();
+// Вставляем "как есть" без trim()
+document.getElementById('reportResult').innerHTML = cleanedData;
           })
           .catch(error => {
               document.getElementById('reportResult').innerHTML =
