@@ -206,7 +206,20 @@
     }
     
     function sendReport(reportId) {
-      alert(`Отчёт ${reportId} запущен!`);
+  fetch("https://script.google.com/macros/s/AKfycbwAUvaoB7z3X29aNAUXzIx4XmbODbWlf8iRE_vUq_QTALq_kHoQIbGTsFYVRHabwD2_/exec?reportId=" + reportId)
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        alert("Ошибка: " + data.error);
+      } else {
+        alert(data.report);
+      }
+    })
+    .catch(error => {
+      alert("Ошибка получения данных: " + error);
+    });
+}
+
     }
   </script>
 </body>
