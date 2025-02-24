@@ -18,23 +18,24 @@
       left: 0;
       width: 100vw;
       height: 100vh;
+      box-sizing: border-box;
       display: none;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      text-align: center;
     }
     #startPage {
       display: flex;
       background: #000;
       color: #fff;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
     }
-    #startPage h1 {
-      margin: 0;
-      font-size: 2.5em;
+    .redText {
       color: red;
+      font-weight: bold;
+      font-size: 2em;
     }
-    #startPage p {
+    .whiteText {
       color: white;
       font-weight: bold;
       margin-top: 1em;
@@ -53,10 +54,14 @@
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
       background-size: cover;
       display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
     #pinContainer {
       position: absolute;
-      top: 45%;
+      top: 40%;
+      width: 100%;
       display: flex;
       justify-content: center;
     }
@@ -75,6 +80,9 @@
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
       background-size: cover;
       display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
     #reportPage button {
       margin: 10px;
@@ -92,19 +100,27 @@
       transform: translateY(-3px);
       box-shadow: 0 6px 10px rgba(0,0,0,0.6);
     }
+    #reportResult {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border-radius: 5px;
+      max-width: 80%;
+      text-align: center;
+    }
   </style>
 </head>
 <body onload="initializeApp()">
-  <!-- Стартовая страница -->
   <div id="startPage" class="page">
-    <h1>THE</h1>
-    <h1>MARAUDER'S</h1>
-    <h1>MAP</h1>
-    <p>Торжественно клянись, что замышляешь только шалость!</p>
+    <h1 class="redText">THE</h1>
+    <h1 class="redText">MARAUDER'S</h1>
+    <h1 class="redText">MAP</h1>
+    <br><br><br>
+    <p class="whiteText">торжественно клянись что замышляешь только шалость!</p>
     <button onclick="goToPinPage()">Клянусь</button>
   </div>
   
-  <!-- PIN-страница -->
   <div id="pinPage" class="page">
     <div id="pinContainer">
       <input type="text" id="pin1" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin2')" autofocus />
@@ -114,18 +130,20 @@
     </div>
   </div>
   
-  <!-- Страница отчётов -->
   <div id="reportPage" class="page">
     <button onclick="sendReport(1)">Тотал сегодня</button>
     <button onclick="sendReport(2)">Топ агентов сегодня</button>
     <button onclick="sendReport(3)">Тотал по месяцу</button>
     <button onclick="sendReport(4)">Просто кнопка</button>
     <button onclick="sendReport(5)">Не нажимай, тут порно</button>
+    <div id="reportResult"></div>
   </div>
   
   <script>
+    const apiUrl = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
+
     function initializeApp() {
-      document.getElementById('startPage').style.display = 'flex';
+      document.getElementById('startPage').style.display = 'block';
       document.getElementById('pinPage').style.display = 'none';
       document.getElementById('reportPage').style.display = 'none';
     }
@@ -177,19 +195,12 @@
         document.getElementById("pin1").focus();
       }
     }
-
+    
     function sendReport(reportId) {
-      fetch("https://script.google.com/macros/s/AKfycbwAUvaoB7z3X29aNAUXzIx4XmbODbWlf8iRE_vUq_QTALq_kHoQIbGTsFYVRHabwD2_/exec?reportId=" + reportId)
-        .then(response => response.json())
+      fetch(`${apiUrl}?reportId=${reportId}`)
+        .then(response => response.text())
         .then(data => {
-          if (data.error) {
-            alert("Ошибка: " + data.error);
-          } else {
-            alert(data.report);
-          }
-        })
-        .catch(error => {
-          alert("Ошибка получения данных: " + error);
+          document.getElementById('reportResult').innerText = data;
         });
     }
   </script>
