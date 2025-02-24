@@ -53,7 +53,6 @@
     #pinPage {
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
       background-size: cover;
-      display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
@@ -76,14 +75,17 @@
       color: #fff;
       caret-color: transparent;
     }
+
+    /* ИСПРАВЛЕНО — добавили display: none; */
     #reportPage {
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
       background-size: cover;
-      display: none;
+      display: none; /* Скрываем меню отчетов при загрузке */
       flex-direction: column;
       justify-content: center;
       align-items: center;
     }
+
     #reportPage button {
       margin: 10px;
       padding: 12px 20px;
@@ -96,100 +98,55 @@
       box-shadow: 0 4px 6px rgba(0,0,0,0.4);
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    #reportPage button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 10px rgba(0,0,0,0.6);
 
-      .report-title {
-        color: white; /* Делаем текст белым */
-        font-size: 2em;
-        text-align: center;
-        margin-top: 40px;
-        font-weight: bold; /* Делаем текст жирным */
-      }
-
-
-      .report-content {
-        color: white; /* Делаем текст белым */
-        background: rgba(255, 255, 255, 0.1); /* Легкая прозрачная подложка */
-        padding: 15px;
-        max-width: 80%;
-        flex-grow: 1;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        border-radius: 10px; /* Закругляем углы */
-      }
-
-
-      #reportDetailsPage {
-        background: black;
-        display: none;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-        height: 100vh;
-        padding: 20px;
-      }
-
-      #reportDetailsPage button {
-        padding: 12px 20px;
-        font-size: 16px;
-        border: none;
-        border-radius: 5px;
-        background: red;
-        color: #fff;
-        cursor: pointer;
-        margin-bottom: 20px;
-        display: block;
-        margin: auto;
-      }
-
-.report-title {
-  color: white;
-  font-size: 2em;
-  text-align: center;
-  margin: 0; /* Убираем лишние отступы */
-}
-
-.report-content {
-  color: white;
-  text-align: center;
-  padding: 20px;
-  max-width: 80%;
-  flex-grow: 1; /* Даем контенту больше пространства */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#reportDetailsPage button {
-  padding: 12px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  background: red;
-  color: #fff;
-  cursor: pointer;
-  margin-bottom: 20px;
-  display: block;
-  margin: auto; /* Центрируем кнопку */
-}
-
-
-    #reportResult {
-      margin-top: 10px;
-      padding: 10px;
-      background: rgba(0, 0, 0, 0.7);
+    /* .report-title — ИСПРАВЛЕНО */
+    .report-title {
       color: white;
-      border-radius: 5px;
+      font-size: 1.5em; /* Уменьшаем размер заголовка */
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+      word-wrap: break-word; /* Переносит длинные названия */
+      max-width: 90%; /* Ограничиваем ширину */
+    }
+
+    .report-content {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
       max-width: 80%;
-      text-align: center; /* Вернули центрирование */
-      line-height: 1.3; /* Уменьшаем отступ между строками */
-   }
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      border-radius: 10px;
+    }
 
+    #reportDetailsPage {
+      background: black;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 20px;
+    }
 
+    #reportDetailsPage button {
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background: red;
+      color: #fff;
+      cursor: pointer;
+      margin-top: auto;
+      margin-bottom: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
   </style>
 </head>
 <body onload="initializeApp()">
@@ -215,27 +172,25 @@
 
       <input type="text" id="pin4" maxlength="1" inputmode="numeric" pattern="[0-9]*"
        oninput="handlePinInput(event, null, 'pin3')" />
-
     </div>
   </div>
   
   <!-- Меню отчетов -->
-<div id="reportPage" class="page">
-    <button onclick="openReport(1, 'Тотал сегодня')">Тотал сегодня</button>
-    <button onclick="openReport(2, 'Топ агентов сегодня')">Топ агентов сегодня</button>
-    <button onclick="openReport(3, 'Тотал по месяцу')">Тотал по месяцу</button>
-    <button onclick="openReport(4, 'Просто кнопка')">Просто кнопка</button>
-    <button onclick="openReport(5, 'Не нажимай, тут порно')">Не нажимай, тут порно</button>
-</div>
+  <div id="reportPage" class="page">
+      <button onclick="openReport(1, 'Тотал сегодня')">Тотал сегодня</button>
+      <button onclick="openReport(2, 'Топ агентов сегодня')">Топ агентов сегодня</button>
+      <button onclick="openReport(3, 'Тотал по месяцу')">Тотал по месяцу</button>
+      <button onclick="openReport(4, 'Просто кнопка')">Просто кнопка</button>
+      <button onclick="openReport(5, 'Не нажимай, тут порно')">Не нажимай, тут порно</button>
+  </div>
 
-<!-- Страница отчета (скрыта по умолчанию) -->
-<div id="reportDetailsPage" class="page">
-    <h1 id="reportTitle" class="report-title"></h1>
-    <div id="reportResult" class="report-content"></div>
-    <button onclick="goBackToMenu()">Назад</button>
-</div>
+  <!-- Страница отчета (скрыта по умолчанию) -->
+  <div id="reportDetailsPage" class="page">
+      <h1 id="reportTitle" class="report-title"></h1>
+      <div id="reportResult" class="report-content"></div>
+      <button onclick="goBackToMenu()">Назад</button>
+  </div>
 
-  
   <!-- Скрипты приложения -->
   <script>
     function initializeApp() {
@@ -250,31 +205,29 @@
       document.getElementById('pin1').focus();
     }
     
-    
     function handlePinInput(event, nextId, prevId) {
-  const input = event.target;
-  const val = input.value;
+      const input = event.target;
+      const val = input.value;
 
-  if (event.inputType === "deleteContentBackward") { 
-    // Если нажата Backspace
-    input.dataset.value = "";
-    input.value = "";
-    if (prevId) {
-      document.getElementById(prevId).focus();
+      if (event.inputType === "deleteContentBackward") {
+        // Если нажата Backspace
+        input.dataset.value = "";
+        input.value = "";
+        if (prevId) {
+          document.getElementById(prevId).focus();
+        }
+      } else if (val.length > 0) {
+        // Если введена цифра
+        input.dataset.value = val;
+        input.value = "💲"; // Скрываем ввод
+        if (nextId) {
+          document.getElementById(nextId).focus();
+        } else {
+          checkPIN(); // Проверяем PIN, если последний символ введен
+        }
+      }
     }
-  } else if (val.length > 0) { 
-    // Если введена цифра
-    input.dataset.value = val;
-    input.value = "💲"; // Скрываем ввод
-    if (nextId) {
-      document.getElementById(nextId).focus();
-    } else {
-      checkPIN(); // Проверяем PIN, если последний символ введен
-    }
-  }
-}
 
-    
     function checkPIN() {
       const pin1 = document.getElementById("pin1").dataset.value || "";
       const pin2 = document.getElementById("pin2").dataset.value || "";
@@ -295,61 +248,59 @@
     }
   </script>
   
-  <!-- Новый скрипт с обновлённой функцией sendReport -->
+  <!-- Новый скрипт для запросов к серверу -->
   <script>
     const apiUrl = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
     const apiUrlSpecial = "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec";
 
-function openReport(reportId, reportTitle) {
-    // Скрываем меню отчетов
-    document.getElementById('reportPage').style.display = 'none';
+    function openReport(reportId, reportTitle) {
+      // Устанавливаем заголовок отчета сразу
+      document.getElementById('reportTitle').innerText = reportTitle;
 
-    // Показываем страницу отчета
-    document.getElementById('reportDetailsPage').style.display = 'flex';
+      // Показываем страницу отчета
+      document.getElementById('reportDetailsPage').style.display = 'flex';
 
-    // Устанавливаем заголовок отчета
-    document.getElementById('reportTitle').innerText = reportTitle;
+      // Скрываем меню отчетов
+      document.getElementById('reportPage').style.display = 'none';
 
-    // Показываем сообщение "Добби отправлен..."
-    document.getElementById('reportResult').innerHTML = `<span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>`;
+      // Показываем сообщение "Добби отправлен..."
+      document.getElementById('reportResult').innerHTML = `<span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>`;
 
-    // Отправляем запрос к серверу
-    let url = (reportId === 5) ? apiUrlSpecial : apiUrl;
+      // Определяем, какой URL использовать
+      let url = (reportId === 5) ? apiUrlSpecial : apiUrl;
 
-    fetch(`${url}?reportId=${reportId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Ошибка сервера: ${response.status}`);
-            }
-            return response.text();
-        })
-        .then(data => {
-            let roundedData = data.replace(/\d+(\.\d+)?/g, match => Math.round(parseFloat(match)));
-            roundedData = roundedData.replace(/\n+/g, '\n').replace(/\n/g, '<br>');
-            roundedData = roundedData.replace(/🔄 <b>Разница со вчера<\/b>:<br>/, '🔄 <b>Разница со вчера</b>: ');
-            roundedData = roundedData.replace(/(<span style='color:red;'>[^<]+<\/span>)<br>(<span style='color:green;'>[^<]+<\/span>)/, "$1&nbsp;/&nbsp;$2");
+      fetch(`${url}?reportId=${reportId}`)
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error(`Ошибка сервера: ${response.status}`);
+              }
+              return response.text();
+          })
+          .then(data => {
+              let roundedData = data.replace(/\d+(\.\d+)?/g, match => Math.round(parseFloat(match)));
+              roundedData = roundedData.replace(/\n+/g, '\n').replace(/\n/g, '<br>');
+              roundedData = roundedData.replace(/🔄 <b>Разница со вчера<\/b>:<br>/, '🔄 <b>Разница со вчера</b>: ');
+              roundedData = roundedData.replace(
+                  /(<span style='color:red;'>[^<]+<\/span>)<br>(<span style='color:green;'>[^<]+<\/span>)/,
+                  "$1&nbsp;/&nbsp;$2"
+              );
 
-            document.getElementById('reportResult').innerHTML = roundedData.trim();
-        })
-        .catch(error => {
-            document.getElementById('reportResult').innerHTML = `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
-        });
-}
+              document.getElementById('reportResult').innerHTML = roundedData.trim();
+          })
+          .catch(error => {
+              document.getElementById('reportResult').innerHTML =
+                `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
+          });
+    }
 
-function goBackToMenu() {
-    // Скрываем страницу отчета
-    document.getElementById('reportDetailsPage').style.display = 'none';
-
-    // Показываем меню отчетов
-    document.getElementById('reportPage').style.display = 'flex';
-
-    // Очищаем содержимое отчета
-    document.getElementById('reportResult').innerHTML = "";
-}
-
-
-
-
+    function goBackToMenu() {
+      // Скрываем страницу отчета
+      document.getElementById('reportDetailsPage').style.display = 'none';
+      // Показываем меню отчетов
+      document.getElementById('reportPage').style.display = 'flex';
+      // Очищаем содержимое отчета
+      document.getElementById('reportResult').innerHTML = "";
+    }
   </script>
 </body>
 </html>
