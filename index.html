@@ -147,6 +147,16 @@
       margin-left: auto;
       margin-right: auto;
     }
+
+    .page {
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out; /* Плавный переход */
+}
+
+.page[style*="display: flex"] {
+    opacity: 1;
+}
+
   </style>
 </head>
 <body onload="initializeApp()">
@@ -331,20 +341,22 @@ function openReport(reportId, reportTitle) {
         });
 }
 function goBackToMenu() {
-    // Скрываем страницу отчета
     let reportDetailsPage = document.getElementById('reportDetailsPage');
+    let reportPage = document.getElementById('reportPage');
+
+    // Плавно скрываем отчет
     reportDetailsPage.style.opacity = "0";
     setTimeout(() => {
         reportDetailsPage.style.display = "none";
-    }, 300); // Ждем 300 мс, чтобы плавно скрыть страницу
 
-    // Показываем меню отчетов
-    let reportPage = document.getElementById('reportPage');
-    reportPage.style.display = "flex";
-    setTimeout(() => {
-        reportPage.style.opacity = "1";
-    }, 100);
+        // После скрытия включаем меню отчетов
+        reportPage.style.display = "flex";
+        setTimeout(() => {
+            reportPage.style.opacity = "1";
+        }, 10); // Задержка, чтобы успел сработать display
+    }, 300); // Ждем 300 мс перед скрытием
 }
+
 
 
   </script>
