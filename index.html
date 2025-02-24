@@ -126,10 +126,18 @@
   
   <div id="pinPage" class="page">
     <div id="pinContainer">
-      <input type="text" id="pin1" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin2')" autofocus />
-      <input type="text" id="pin2" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin3')" onkeydown="handleBackspace(event, this, 'pin1')" />
-      <input type="text" id="pin3" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin4')" onkeydown="handleBackspace(event, this, 'pin2')" />
-      <input type="text" id="pin4" maxlength="1" inputmode="numeric" pattern="[0-9]*" onkeydown="handleBackspace(event, this, 'pin3')" oninput="handlePinInput(this, '')" />
+      <input type="text" id="pin1" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+       oninput="handlePinInput(event, 'pin2', null)" autofocus />
+
+      <input type="text" id="pin2" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+       oninput="handlePinInput(event, 'pin3', 'pin1')" />
+
+      <input type="text" id="pin3" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+       oninput="handlePinInput(event, 'pin4', 'pin2')" />
+
+      <input type="text" id="pin4" maxlength="1" inputmode="numeric" pattern="[0-9]*"
+       oninput="handlePinInput(event, null, 'pin3')" />
+
     </div>
   </div>
   
@@ -157,28 +165,30 @@
       document.getElementById('pin1').focus();
     }
     
-    function handlePinInput(input, nextId) {
-      let val = input.value;
-      if (val.length > 0) {
-        input.dataset.value = val;
-        input.value = "💲";
-        if (nextId) {
-          document.getElementById(nextId).focus();
-        } else {
-          checkPIN();
-        }
-      }
-    }
     
-    function handleBackspace(event, input, prevId) {
-      if (event.key === "Backspace") {
-        input.dataset.value = "";
-        input.value = "";
-        if (prevId) {
-          document.getElementById(prevId).focus();
-        }
-      }
+    function handlePinInput(event, nextId, prevId) {
+  const input = event.target;
+  const val = input.value;
+
+  if (event.inputType === "deleteContentBackward") { 
+    // Если нажата Backspace
+    input.dataset.value = "";
+    input.value = "";
+    if (prevId) {
+      document.getElementById(prevId).focus();
     }
+  } else if (val.length > 0) { 
+    // Если введена цифра
+    input.dataset.value = val;
+    input.value = "💲"; // Скрываем ввод
+    if (nextId) {
+      document.getElementById(nextId).focus();
+    } else {
+      checkPIN(); // Проверяем PIN, если последний символ введен
+    }
+  }
+}
+
     
     function checkPIN() {
       const pin1 = document.getElementById("pin1").dataset.value || "";
