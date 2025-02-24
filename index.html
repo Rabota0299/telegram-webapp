@@ -3,211 +3,78 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Карта Мародеров</title>
-  <!-- Подключаем шрифт MedievalSharp для готического стиля -->
-  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <title>Мини-приложение</title>
   <style>
     /* Убираем прокрутку */
     body {
       margin: 0;
       overflow: hidden;
-      font-family: 'MedievalSharp', cursive;
+      font-family: Arial, sans-serif;
     }
-    /* Все страницы занимают весь экран и позиционированы фиксированно */
+    
+    /* Все страницы занимают весь экран */
     .page {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      box-sizing: border-box;
-      display: none;
+      display: none; /* ВСЕ страницы скрыты по умолчанию */
+      justify-content: center;
+      align-items: center;
+      text-align: center;
     }
-    /* Стартовая страница: чёрный фон, текст по требованиям */
+
+    /* Стартовая страница */
     #startPage {
-      display: block; /* первая страница видна по умолчанию */
-      background: #000;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-    #startPage h1 {
-      margin: 0;
-      font-size: 2em;
-      line-height: 1.2;
-    }
-    /* Красный жирный текст */
-    .redText {
-      color: red;
-      font-weight: bold;
-    }
-    /* Белый жирный текст */
-    .whiteText {
+      display: flex; /* Только стартовая страница показывается вначале */
+      background: black;
       color: white;
-      font-weight: bold;
-      margin-top: 1em;
     }
-    #startPage button {
-      margin-top: 20px;
-      padding: 12px 20px;
-      font-size: 16px;
+    
+    /* Вторая страница (пока белый фон) */
+    #secondPage {
+      background: white;
+      color: black;
+    }
+
+    /* Кнопка */
+    button {
+      padding: 15px 25px;
+      font-size: 18px;
       border: none;
       border-radius: 5px;
       background: red;
-      color: #fff;
+      color: white;
       cursor: pointer;
-    }
-    /* PIN-страница */
-    #pinPage {
-      background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
-      background-size: cover;
-      display: none; /* по умолчанию скрыта */
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    #pinContainer {
-      position: absolute;
-      top: 40%;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-    }
-    #pinContainer input {
-      width: 40px;
-      height: 40px;
-      font-size: 1.5em;
-      text-align: center;
-      margin: 0 10px;
-      background: #333;
-      border: 1px solid #555;
-      color: #fff;
-      caret-color: transparent;
-    }
-    /* Страница отчётов */
-    #reportPage {
-      background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
-      background-size: cover;
-      display: none; /* по умолчанию скрыта */
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    #reportPage button {
-      margin: 10px;
-      padding: 12px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      background: red;
-      color: #fff;
-      cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
       transition: transform 0.2s, box-shadow 0.2s;
     }
-    #reportPage button:hover {
+    button:hover {
       transform: translateY(-3px);
-      box-shadow: 0 6px 10px rgba(0,0,0,0.6);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.6);
     }
   </style>
 </head>
-<body onload="initializeApp()">
+<body>
+
   <!-- Стартовая страница -->
   <div id="startPage" class="page">
-    <h1 class="redText">THE</h1>
-    <h1 class="redText">MARAUDER'S</h1>
-    <h1 class="redText">MAP</h1>
-    <br><br><br>
-    <p class="whiteText">торжественно клянешься что замышляешь только шалость</p>
-    <button onclick="goToPinPage()">Клянусь</button>
+    <button onclick="goToSecondPage()">Клянусь</button>
   </div>
-  
-  <!-- PIN-страница -->
-  <div id="pinPage" class="page">
-    <div id="pinContainer">
-      <input type="text" id="pin1" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin2')" autofocus />
-      <input type="text" id="pin2" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin3')" onkeydown="handleBackspace(event, this, 'pin1')" />
-      <input type="text" id="pin3" maxlength="1" inputmode="numeric" pattern="[0-9]*" oninput="handlePinInput(this, 'pin4')" onkeydown="handleBackspace(event, this, 'pin2')" />
-      <input type="text" id="pin4" maxlength="1" inputmode="numeric" pattern="[0-9]*" onkeydown="handleBackspace(event, this, 'pin3')" oninput="handlePinInput(this, '')" />
-    </div>
-  </div>
-  
-  <!-- Страница отчётов -->
-  <div id="reportPage" class="page">
-    <button onclick="sendReport(1)">Отчёт 1</button>
-    <button onclick="sendReport(2)">Отчёт 2</button>
-    <button onclick="sendReport(3)">Отчёт 3</button>
-    <button onclick="sendReport(4)">Отчёт 4</button>
-    <button onclick="sendReport(5)">Отчёт 5</button>
-  </div>
-  
-  <script>
-    // Гарантированная инициализация приложения при загрузке
-    function initializeApp() {
-      document.getElementById('startPage').style.display = 'block';
-      document.getElementById('pinPage').style.display = 'none';
-      document.getElementById('reportPage').style.display = 'none';
-    }
 
-    // Переход со стартовой страницы на PIN-страницу
-    function goToPinPage() {
+  <!-- Вторая страница -->
+  <div id="secondPage" class="page">
+    <h1>Вторая страница</h1>
+  </div>
+
+  <script>
+    // Переключение на вторую страницу
+    function goToSecondPage() {
       document.getElementById('startPage').style.display = 'none';
-      document.getElementById('pinPage').style.display = 'flex';
-      document.getElementById('pin1').focus();
-    }
-    
-    // Обработка ввода PIN
-    function handlePinInput(input, nextId) {
-      let val = input.value;
-      if (val.length > 0) {
-        input.dataset.value = val;
-        input.value = "💲";
-        if (nextId) {
-          document.getElementById(nextId).focus();
-        } else {
-          checkPIN();
-        }
-      }
-    }
-    
-    // Обработка Backspace
-    function handleBackspace(event, input, prevId) {
-      if (event.key === "Backspace") {
-        input.dataset.value = "";
-        input.value = "";
-        if (prevId) {
-          document.getElementById(prevId).focus();
-        }
-      }
-    }
-    
-    // Проверка PIN-кода
-    function checkPIN() {
-      const pin1 = document.getElementById("pin1").dataset.value || "";
-      const pin2 = document.getElementById("pin2").dataset.value || "";
-      const pin3 = document.getElementById("pin3").dataset.value || "";
-      const pin4 = document.getElementById("pin4").dataset.value || "";
-      const enteredPIN = pin1 + pin2 + pin3 + pin4;
-      if (enteredPIN === "2402") {
-        document.getElementById('pinPage').style.display = 'none';
-        document.getElementById('reportPage').style.display = 'flex';
-      } else {
-        alert("Неверный PIN!");
-        ["pin1", "pin2", "pin3", "pin4"].forEach(id => {
-          document.getElementById(id).value = "";
-          document.getElementById(id).dataset.value = "";
-        });
-        document.getElementById("pin1").focus();
-      }
-    }
-    
-    function sendReport(reportId) {
-      alert(`Отчёт ${reportId} запущен!`);
+      document.getElementById('secondPage').style.display = 'flex';
     }
   </script>
+
 </body>
 </html>
