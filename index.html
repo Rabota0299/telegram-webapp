@@ -254,7 +254,7 @@
     const apiUrlSpecial = "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec";
 
 function openReport(reportId, reportTitle) {
-    // Устанавливаем заголовок отчета сразу
+    // Устанавливаем заголовок отчета
     document.getElementById('reportTitle').innerText = reportTitle;
 
     // Показываем страницу отчета
@@ -282,7 +282,37 @@ function openReport(reportId, reportTitle) {
                 throw new Error("Получены пустые данные");
             }
 
-            // Убираем undefined: заменяем только если `match` - это число
+            // 🔥 Обрабатываем "Тотал по месяцу" (reportId === 3)
+            if (reportId === 3) {
+                let rows = data.trim().split("\n"); // Разбиваем на строки
+                let totalSum = 0;
+                let formattedRows = [];
+
+                rows.forEach(row => {
+                    let columns = row.split("\t"); // Разделяем столбцы (по табуляции)
+                    if (columns.length >= 2) {
+                        let manager = columns[0].trim();
+                        let sum = parseFloat(columns[1].replace(/\s/g, "")) || 0; // Убираем пробелы в числе
+                        totalSum += sum;
+                        formattedRows.push(`<b>${manager}</b>: ${sum.toLocaleString()}`);
+                    }
+                });
+
+                // Формируем HTML-отчет
+                let formattedData = `
+                    <div style="font-size: 1.5em; text-align: center; margin-bottom: 10px;">
+                        💰 <b>Общий тотал за месяц:</b> ${totalSum.toLocaleString()}
+                    </div>
+                    <div style="text-align: left; font-size: 1.2em; padding: 10px;">
+                        ${formattedRows.join("<br>")}
+                    </div>
+                `;
+
+                document.getElementById('reportResult').innerHTML = formattedData;
+                return;
+            }
+
+            // 🟢 Обычная обработка для остальных отчетов
             let cleanedData = data.replace(/\bundefined\b/g, ""); // Убираем все "undefined"
             cleanedData = cleanedData.replace(/\d+(\.\d+)?/g, match => {
                 return isNaN(parseFloat(match)) ? match : Math.round(parseFloat(match));
@@ -293,11 +323,6 @@ function openReport(reportId, reportTitle) {
 
             // Добавляем неразрывный пробел между числами
             cleanedData = cleanedData.replace(/(<span style='color:red;'>[^<]+<\/span>)(<span style='color:green;'>[^<]+<\/span>)/, "$1&nbsp;/&nbsp;$2");
-
-            // 🔥 Отдельная обработка отчета №5 (если `reportId === 5`)
-            if (reportId === 5) {
-                cleanedData = `<div style="font-size: 1.3em; text-align: center;">${cleanedData}</div>`;
-            }
 
             document.getElementById('reportResult').innerHTML = cleanedData.trim();
         })
