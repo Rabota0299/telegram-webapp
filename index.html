@@ -211,15 +211,18 @@
   fetch(`${url}?reportId=${reportId}`)
     .then(response => response.text())
     .then(data => {
-      // Округляем все числа в полученном ответе
-      let roundedData = data.replace(/\d+(\.\d+)?/g, match => {
-        let num = parseFloat(match);
-        return Math.round(num);
-      });
-      
-      // Вставляем полученный HTML (с округлёнными числами) в reportResult
-      document.getElementById('reportResult').innerHTML = roundedData;
+    // Округляете числа, если нужно
+    let roundedData = data.replace(/\d+(\.\d+)?/g, match => {
+      return Math.round(parseFloat(match));
     });
+
+    // Превращаем обычные переводы строк в <br>
+    roundedData = roundedData.replace(/\n/g, '<br>');
+
+    // Теперь вставляем как HTML
+    document.getElementById('reportResult').innerHTML = roundedData;
+});
+
 }
 
   </script>
