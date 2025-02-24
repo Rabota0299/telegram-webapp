@@ -196,13 +196,24 @@
       }
     }
     
-    function sendReport(reportId) {
-      fetch(`${apiUrl}?reportId=${reportId}`)
-        .then(response => response.text())
-        .then(data => {
-          document.getElementById('reportResult').innerText = data;
-        });
+  <script>
+  const apiUrl = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
+  const apiUrlSpecial = "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec";
+
+  function sendReport(reportId) {
+    let url = apiUrl;
+    if (reportId === 5) {
+      url = apiUrlSpecial;
     }
+    
+    fetch(`${url}?reportId=${reportId}`)
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('reportResult').innerText = data;
+      });
+  }
+</script>
+
   </script>
 </body>
 </html>
