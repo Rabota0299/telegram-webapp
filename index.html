@@ -26,7 +26,7 @@
     }
     /* Стартовая страница: чёрный фон, текст по требованиям */
     #startPage {
-      display: block; /* первая страница видна */
+      display: block; /* первая страница видна по умолчанию */
       background: #000;
       color: #fff;
       display: flex;
@@ -40,11 +40,12 @@
       font-size: 2em;
       line-height: 1.2;
     }
-    /* Кастомный стиль для стартового текста */
+    /* Красный жирный текст */
     .redText {
       color: red;
       font-weight: bold;
     }
+    /* Белый жирный текст */
     .whiteText {
       color: white;
       font-weight: bold;
@@ -60,16 +61,15 @@
       color: #fff;
       cursor: pointer;
     }
-    /* PIN-страница: фон с изображением */
+    /* PIN-страница */
     #pinPage {
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
       background-size: cover;
-      display: flex;
+      display: none; /* по умолчанию скрыта */
       flex-direction: column;
       justify-content: center;
       align-items: center;
     }
-    /* Контейнер для PIN-кода располагается чуть выше середины */
     #pinContainer {
       position: absolute;
       top: 40%;
@@ -88,11 +88,11 @@
       color: #fff;
       caret-color: transparent;
     }
-    /* Страница отчётов: тот же фон, 5 кнопок по центру */
+    /* Страница отчётов */
     #reportPage {
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
       background-size: cover;
-      display: flex;
+      display: none; /* по умолчанию скрыта */
       flex-direction: column;
       justify-content: center;
       align-items: center;
@@ -115,7 +115,7 @@
     }
   </style>
 </head>
-<body>
+<body onload="initializeApp()">
   <!-- Стартовая страница -->
   <div id="startPage" class="page">
     <h1 class="redText">THE</h1>
@@ -146,6 +146,13 @@
   </div>
   
   <script>
+    // Гарантированная инициализация приложения при загрузке
+    function initializeApp() {
+      document.getElementById('startPage').style.display = 'block';
+      document.getElementById('pinPage').style.display = 'none';
+      document.getElementById('reportPage').style.display = 'none';
+    }
+
     // Переход со стартовой страницы на PIN-страницу
     function goToPinPage() {
       document.getElementById('startPage').style.display = 'none';
@@ -153,7 +160,7 @@
       document.getElementById('pin1').focus();
     }
     
-    // Обработка ввода в PIN-поле
+    // Обработка ввода PIN
     function handlePinInput(input, nextId) {
       let val = input.value;
       if (val.length > 0) {
@@ -190,7 +197,7 @@
         document.getElementById('reportPage').style.display = 'flex';
       } else {
         alert("Неверный PIN!");
-        ["pin1", "pin2", "pin3", "pin4"].forEach(function(id) {
+        ["pin1", "pin2", "pin3", "pin4"].forEach(id => {
           document.getElementById(id).value = "";
           document.getElementById(id).dataset.value = "";
         });
@@ -198,14 +205,9 @@
       }
     }
     
-    // Функция отправки отчёта
     function sendReport(reportId) {
       alert(`Отчёт ${reportId} запущен!`);
-      // Здесь можно добавить вызов API для отчёта
     }
-    
-    // Если используется Telegram WebApp API, можно вызвать tg.expand();
-    // tg.expand();
   </script>
 </body>
 </html>
