@@ -13,16 +13,24 @@
       font-family: 'MedievalSharp', cursive;
     }
     .page {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      box-sizing: border-box;
-      display: none;
-      opacity: 0; /* Для плавной анимации */
-      transition: opacity 0.3s ease-in-out;
-    }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  visibility: hidden; /* Вместо display: none */
+  opacity: 0; /* Начально невидимо */
+  transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
+}
+
+/* Когда страница должна быть видимой */
+.page.visible {
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
+}
+
     /* Когда у элемента есть "display: flex" через inline-стиль, включаем opacity */
     .page[style*="display: flex"] {
       opacity: 1;
@@ -206,17 +214,17 @@
     /* Инициализация приложения */
     function initializeApp() {
       // Показываем стартовую страницу
-      document.getElementById('startPage').style.display = 'flex';
+      document.getElementById('startPage').classList.add('visible');
       // Остальные скрыты
-      document.getElementById('pinPage').style.display = 'none';
-      document.getElementById('reportPage').style.display = 'none';
-      document.getElementById('reportDetailsPage').style.display = 'none';
+      document.getElementById('pinPage').classList.remove('visible');
+      document.getElementById('reportPage').classList.remove('visible');
+      document.getElementById('reportDetailsPage').classList.remove('visible')';
     }
 
     /* Переход к вводу PIN */
     function goToPinPage() {
-      document.getElementById('startPage').style.display = 'none';
-      document.getElementById('pinPage').style.display = 'flex';
+      document.getElementById('startPage').classList.remove('visible');
+      document.getElementById('pinPage').classList.add('visible');
       document.getElementById('pin1').focus();
     }
 
