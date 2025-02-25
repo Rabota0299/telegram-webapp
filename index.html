@@ -316,96 +316,56 @@
     }
 
     /* Открываем отчет по клику на кнопку */
-    function openReport(reportId, reportTitle) {
-      console.log("📢 Кнопка нажата, reportId:", reportId);
+   function openReport(reportId, reportTitle) {
+  console.log("📢 Кнопка нажата, reportId:", reportId);
 
-      // Устанавливаем заголовок на странице отчета
-      document.getElementById('reportTitle').innerHTML = reportTitle;
-      // «Заглушка», пока не пришел ответ
+  document.getElementById('reportTitle').innerHTML = reportTitle;
+  document.getElementById('reportResult').innerHTML =
+    `<span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>`;
+
+  let reportDetailsPage = document.getElementById('reportDetailsPage');
+  let reportPage        = document.getElementById('reportPage');
+
+  reportPage.style.opacity = "0";
+  setTimeout(() => {
+    reportPage.style.display = "none";
+    reportDetailsPage.style.display = "flex";
+    setTimeout(() => {
+      reportDetailsPage.style.opacity = "1";
+    }, 50);
+  }, 300);
+
+  let url = (reportId === 5) ? apiUrlSpecial : apiUrl;
+  console.log("🌍 Отправка запроса на:", url);
+
+  fetch(`${url}?reportId=${reportId}`)
+    .then(response => response.json())
+    .then(data => {
+      console.log("📢 Ответ от сервера:", data);
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      if (reportId === 5) {
+        let formattedData = `
+          <div style="font-size: 1.5em; text-align: center; margin-bottom: 10px;">
+            <span style="color:${data.expense.color};"><b>${data.expense.label}:</b> ${data.expense.value}</span><br>
+            <span style="color:${data.income.color};"><b>${data.income.label}:</b> ${data.income.value}</span>
+          </div>
+        `;
+        document.getElementById('reportResult').innerHTML = formattedData;
+      } else {
+        document.getElementById('reportResult').innerHTML = data;
+      }
+    })
+    .catch(error => {
+      console.error("❌ Ошибка загрузки отчета:", error);
       document.getElementById('reportResult').innerHTML =
-        `<span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>`;
+        `<span style="color:red;">Ошибка загрузки данных, попробуй позже.</span>`;
+    });
+}
 
-      let reportDetailsPage = document.getElementById('reportDetailsPage');
-      let reportPage        = document.getElementById('reportPage');
-
-      // Плавно скрываем меню отчетов
-      reportPage.style.opacity = "0";
-      setTimeout(() => {
-        reportPage.style.display = "none";
-        // Показываем страницу деталей
-        reportDetailsPage.style.display = "flex";
-        setTimeout(() => {
-          reportDetailsPage.style.opacity = "1";
-        }, 50);
-      }, 300);
-
-      // Выбираем URL
-      let url = (reportId === 5) ? apiUrlSpecial : apiUrl;
-      console.log("🌍 Отправка запроса на:", url);
-
-      // Отправляем запрос
-      fetch(`${url}?reportId=${reportId}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`Ошибка сервера: ${response.status}`);
-          }
-          return response.text();
-        })
-        .then(data => {
-          console.log("📢 Ответ от сервера:", data);
-
-          if (!data || data.trim() === "") {
-            throw new Error("Получены пустые данные");
-          }
-
-          // Если это «Тотал по месяцу» (reportId === 3)
-          if (reportId === 3) {
-            let rows      = data.trim().split(/\r?\n/);
-            let totalSum  = 0;
-            let formatted = [];
-
-            rows.forEach(row => {
-              let columns = row.split(/\t|,|;/);
-              if (columns.length >= 2) {
-                let manager = columns[0].trim();
-                let sumRaw  = columns[1].replace(/[^\d.-]/g, "");
-                let sum     = parseFloat(sumRaw) || 0;
-
-                totalSum += sum;
-                formatted.push(`<b>${manager}</b>: ${sum.toLocaleString()}`);
-              }
-            });
-
-            let formattedData = `
-              <div style="font-size: 1.5em; text-align: center; margin-bottom: 10px;">
-                💰 <b>Общий тотал за месяц:</b> ${totalSum.toLocaleString()}
-              </div>
-              <div style="text-align: left; font-size: 1.2em; padding: 10px;">
-                ${formatted.join("<br>")}
-              </div>
-            `;
-            document.getElementById('reportResult').innerHTML = formattedData;
-
-          } else if (reportId === 5) {
-            // Сначала «причёсываем» HTML (округляем числа)
-            let fixedHTML = formatReportHTML(data);
-            // Затем убираем лишние переносы
-            fixedHTML = cleanupNewlines(fixedHTML);
-
-            document.getElementById('reportResult').innerHTML = fixedHTML;
-          } else {
-            // Для остальных отчетов просто вставляем
-            // (но тоже можем почистить переносы, если нужно)
-            data = cleanupNewlines(data);
-            document.getElementById('reportResult').innerHTML = data;
-          }
-        })
-        .catch(error => {
-          console.error("❌ Ошибка загрузки отчета:", error);
-          document.getElementById('reportResult').innerHTML =
-            `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
-        });
-    }
 
     /* Возврат в меню отчетов */
     function goBackToMenu() {
