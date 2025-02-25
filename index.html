@@ -349,16 +349,35 @@
 
       if (reportId === 5) {
         let formattedData = `
-          <div style="font-size: 1.5em; text-align: center; margin-bottom: 10px;">
-            <span style="color:${data.expense.color};"><b>${data.expense.label}:</b> ${data.expense.value}</span><br>
-            <span style="color:${data.income.color};"><b>${data.income.label}:</b> ${data.income.value}</span>
+          <div style="display: flex; flex-direction: column; align-items: center; font-size: 1.2em;">
+      
+            <!-- Красный блок (РАСХОД) -->
+            <div style="border: 2px solid red; padding: 5px 15px; border-radius: 5px; text-align: center; width: 80%;">
+              <span style="color:${data.expense.color}; font-weight: bold;">
+                ${data.expense.label}:
+              </span>
+              <span style="color:${data.expense.color}; font-size: 1.1em;">
+                ${data.expense.value}
+              </span>
+            </div>
+
+            <br>
+
+            <!-- Зеленый блок (ДОХОД) -->
+            <div style="border: 2px solid green; padding: 5px 15px; border-radius: 5px; text-align: center; width: 80%;">
+              <span style="color:${data.income.color}; font-weight: bold;">
+                ${data.income.label}:
+              </span>
+              <span style="color:${data.income.color}; font-size: 1.1em;">
+                ${data.income.value}
+              </span>
+            </div>
+      
           </div>
         `;
         document.getElementById('reportResult').innerHTML = formattedData;
-      } else {
-        document.getElementById('reportResult').innerHTML = data;
       }
-    })
+
     .catch(error => {
       console.error("❌ Ошибка загрузки отчета:", error);
       document.getElementById('reportResult').innerHTML =
