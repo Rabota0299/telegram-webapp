@@ -32,7 +32,7 @@
 }
 
     /* Когда у элемента есть "display: flex" через inline-стиль, включаем opacity */
-    .page[style*="display: flex"] {
+    .page[classList.add('visible')] {
       opacity: 1;
     }
     #startPage {
@@ -263,8 +263,8 @@
 
       // Задаем свой пин-код
       if (enteredPIN === "2402") {
-        document.getElementById('pinPage').style.display = 'none';
-        document.getElementById('reportPage').style.display = 'flex';
+        document.getElementById('pinPage').classList.remove('visible');
+        document.getElementById('reportPage').classList.add('visible')';
       } else {
         alert("Неверный PIN!");
         // Сброс значений
