@@ -339,9 +339,9 @@
       // Плавно скрываем меню отчетов
       reportPage.style.opacity = "0";
       setTimeout(() => {
-        reportPage.style.display = "none";
+        reportPage.classList.remove('visible');
         // Показываем страницу деталей
-        reportDetailsPage.style.display = "flex";
+        reportDetailsPage.classList.add('visible');
         setTimeout(() => {
           reportDetailsPage.style.opacity = "1";
         }, 50);
@@ -423,9 +423,9 @@
       // Плавное скрытие деталей отчета
       reportDetailsPage.style.opacity = "0";
       setTimeout(() => {
-        reportDetailsPage.style.display = "none";
+        reportDetailsPage.classList.remove('visible');
         // Возвращаем меню отчетов
-        reportPage.style.display = "flex";
+        reportPage.classList.add('visible');
         setTimeout(() => {
           reportPage.style.opacity = "1";
         }, 50);
