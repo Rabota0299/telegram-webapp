@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>Карта Мародеров</title>
   <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
   
@@ -21,14 +21,12 @@
       box-sizing: border-box;
       display: none;
       opacity: 0; /* Для плавной анимации */
-      transition: opacity 0.3s ease-in-out; /* Плавная анимация */
+      transition: opacity 0.3s ease-in-out;
     }
-
     /* Когда у элемента есть "display: flex" через inline-стиль, включаем opacity */
     .page[style*="display: flex"] {
       opacity: 1;
     }
-
     #startPage {
       display: flex;
       background: #000;
@@ -58,7 +56,6 @@
       color: #fff;
       cursor: pointer;
     }
-
     #pinPage {
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
       background-size: cover;
@@ -84,7 +81,6 @@
       color: #fff;
       caret-color: transparent;
     }
-
     /* Меню отчетов по умолчанию скрыто */
     #reportPage {
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
@@ -106,18 +102,15 @@
       box-shadow: 0 4px 6px rgba(0,0,0,0.4);
       transition: transform 0.2s, box-shadow 0.2s;
     }
-
-    /* Заголовок в отчете */
     .report-title {
       color: white;
-      font-size: 1.5em; /* Уменьшаем размер заголовка */
+      font-size: 1.5em;
       text-align: center;
       margin-top: 20px;
       font-weight: bold;
-      word-wrap: break-word; /* Переносит длинные названия */
-      max-width: 90%; /* Ограничиваем ширину */
+      word-wrap: break-word;
+      max-width: 90%;
     }
-
     .report-content {
       color: white;
       background: rgba(255, 255, 255, 0.1);
@@ -129,10 +122,8 @@
       align-items: center;
       text-align: center;
       border-radius: 10px;
-      white-space: pre-wrap; /* Добавлено для сохранения переносов строк */
+      white-space: pre-wrap;
     }
-
-
     #reportDetailsPage {
       background: black;
       display: none;
@@ -142,7 +133,6 @@
       height: 100vh;
       padding: 20px;
     }
-
     #reportDetailsPage button {
       padding: 12px 20px;
       font-size: 16px;
@@ -160,13 +150,14 @@
   </style>
 </head>
 <body onload="initializeApp()">
+
   <!-- Стартовая страница -->
   <div id="startPage" class="page">
     <h1 class="redText">THE</h1>
     <h1 class="redText">MARAUDER'S</h1>
     <h1 class="redText">MAP</h1>
     <br><br><br>
-    <p class="whiteText">торжественно клянись что замышляешь только шалость!</p>
+    <p class="whiteText">Торжественно клянусь, что замышляю только шалость!</p>
     <button onclick="goToPinPage()">Клянусь</button>
   </div>
   
@@ -174,16 +165,13 @@
   <div id="pinPage" class="page">
     <div id="pinContainer">
       <input type="text" id="pin1" maxlength="1" inputmode="numeric" pattern="[0-9]*"
-       oninput="handlePinInput(event, 'pin2', null)" autofocus />
-
+             oninput="handlePinInput(event, 'pin2', null)" autofocus />
       <input type="text" id="pin2" maxlength="1" inputmode="numeric" pattern="[0-9]*"
-       oninput="handlePinInput(event, 'pin3', 'pin1')" />
-
+             oninput="handlePinInput(event, 'pin3', 'pin1')" />
       <input type="text" id="pin3" maxlength="1" inputmode="numeric" pattern="[0-9]*"
-       oninput="handlePinInput(event, 'pin4', 'pin2')" />
-
+             oninput="handlePinInput(event, 'pin4', 'pin2')" />
       <input type="text" id="pin4" maxlength="1" inputmode="numeric" pattern="[0-9]*"
-       oninput="handlePinInput(event, null, 'pin3')" />
+             oninput="handlePinInput(event, null, 'pin3')" />
     </div>
   </div>
   
@@ -203,28 +191,33 @@
     <button onclick="goBackToMenu()">Назад</button>
   </div>
   
+  <!-- Скрипт Telegram WebApp (обязательно должен идти до вашего кода) -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  
+
   <script>
     /* Инициализация приложения */
     function initializeApp() {
-  // Стартовая страница видна (используем flex)
-  document.getElementById('startPage').style.display = 'flex';
-  // Остальные скрыты
-  document.getElementById('pinPage').style.display = 'none';
-  document.getElementById('reportPage').style.display = 'none';
-  document.getElementById('reportDetailsPage').style.display = 'none';
-}
+      // Показываем стартовую страницу
+      document.getElementById('startPage').style.display = 'flex';
+      // Остальные скрыты
+      document.getElementById('pinPage').style.display = 'none';
+      document.getElementById('reportPage').style.display = 'none';
+      document.getElementById('reportDetailsPage').style.display = 'none';
 
+      // Если нужно, можно «раскрыть» WebApp на весь экран:
+      // Telegram.WebApp.expand();
+      // И сообщить Telegram, что WebApp готово:
+      // Telegram.WebApp.ready();
+    }
 
+    /* Переход к вводу PIN */
     function goToPinPage() {
-      // Скрываем startPage
       document.getElementById('startPage').style.display = 'none';
-      // Показываем pinPage
       document.getElementById('pinPage').style.display = 'flex';
       document.getElementById('pin1').focus();
     }
-    
+
+    /* Логика ввода PIN-кода */
     function handlePinInput(event, nextId, prevId) {
       const input = event.target;
       const val = input.value;
@@ -239,15 +232,17 @@
       } else if (val.length > 0) {
         // Если введена цифра
         input.dataset.value = val;
-        input.value = "💲"; // Скрываем ввод
+        // Ставим вместо цифры символ, чтобы скрыть ввод
+        input.value = "💲";
         if (nextId) {
           document.getElementById(nextId).focus();
         } else {
-          checkPIN(); // Проверяем PIN, если последний символ введен
+          checkPIN(); // Проверка на последней цифре
         }
       }
     }
 
+    /* Проверяем правильность PIN */
     function checkPIN() {
       const pin1 = document.getElementById("pin1").dataset.value || "";
       const pin2 = document.getElementById("pin2").dataset.value || "";
@@ -255,11 +250,13 @@
       const pin4 = document.getElementById("pin4").dataset.value || "";
       const enteredPIN = pin1 + pin2 + pin3 + pin4;
 
+      // Задаем свой пин-код
       if (enteredPIN === "2402") {
         document.getElementById('pinPage').style.display = 'none';
         document.getElementById('reportPage').style.display = 'flex';
       } else {
         alert("Неверный PIN!");
+        // Сброс значений
         ["pin1", "pin2", "pin3", "pin4"].forEach(id => {
           document.getElementById(id).value = "";
           document.getElementById(id).dataset.value = "";
@@ -267,129 +264,111 @@
         document.getElementById("pin1").focus();
       }
     }
-  </script>
-  
-  <!-- Скрипт для запросов к серверу -->
-  <script>
-    const apiUrl = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
-    const apiUrlSpecial = "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec";
 
-    /* 
-      Улучшенный openReport(): 
-      - Плавно скрываем меню отчетов 
-      - Плавно показываем страницу отчета
-    */
+    /* URL для запросов */
+    const apiUrl       = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
+    const apiUrlSpecial= "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec";
+
+    /* Открываем отчет по клику на кнопку */
     function openReport(reportId, reportTitle) {
-    console.log("📢 Кнопка нажата, reportId:", reportId);
+      console.log("📢 Кнопка нажата, reportId:", reportId);
 
-    document.getElementById('reportTitle').innerHTML = reportTitle;
-    document.getElementById('reportResult').innerHTML =
+      // Устанавливаем заголовок на странице отчета
+      document.getElementById('reportTitle').innerHTML = reportTitle;
+      // «Заглушка», пока не пришел ответ
+      document.getElementById('reportResult').innerHTML =
         `<span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>`;
 
-    let reportDetailsPage = document.getElementById('reportDetailsPage');
-    let reportPage = document.getElementById('reportPage');
+      let reportDetailsPage = document.getElementById('reportDetailsPage');
+      let reportPage        = document.getElementById('reportPage');
 
-    reportPage.style.opacity = "0";
-    setTimeout(() => {
+      // Плавно скрываем меню отчетов
+      reportPage.style.opacity = "0";
+      setTimeout(() => {
         reportPage.style.display = "none";
+        // Показываем страницу деталей
         reportDetailsPage.style.display = "flex";
         setTimeout(() => {
-            reportDetailsPage.style.opacity = "1";
+          reportDetailsPage.style.opacity = "1";
         }, 50);
-    }, 300);
+      }, 300);
 
-    let url = (reportId === 5) ? apiUrlSpecial : apiUrl;
-    console.log("🌍 Отправка запроса на:", url);
+      // Выбираем URL
+      let url = (reportId === 5) ? apiUrlSpecial : apiUrl;
+      console.log("🌍 Отправка запроса на:", url);
 
-    fetch(`${url}?reportId=${reportId}`)
+      // Отправляем запрос
+      fetch(`${url}?reportId=${reportId}`)
         .then(response => {
-            if (!response.ok) throw new Error(`Ошибка сервера: ${response.status}`);
-            return response.text();
+          if (!response.ok) {
+            throw new Error(`Ошибка сервера: ${response.status}`);
+          }
+          return response.text();
         })
         .then(data => {
-            console.log("📢 Ответ от сервера:", data);
+          console.log("📢 Ответ от сервера:", data);
 
-            if (!data || data.trim() === "") {
-                throw new Error("Получены пустые данные");
-            }
+          if (!data || data.trim() === "") {
+            throw new Error("Получены пустые данные");
+          }
 
-            // 🔥 Обработка "Тотал по месяцу" (reportId === 3)
-            if (reportId === 3) {
-                let rows = data.trim().split(/\r?\n/);
-                let totalSum = 0;
-                let formattedRows = [];
+          // Если это «Тотал по месяцу» (reportId === 3), делаем особую обработку
+          if (reportId === 3) {
+            let rows      = data.trim().split(/\r?\n/);
+            let totalSum  = 0;
+            let formatted = [];
 
-                rows.forEach(row => {
-                    let columns = row.split(/\t|,|;/);
-                    if (columns.length >= 2) {
-                        let manager = columns[0].trim();
-                        let sumRaw = columns[1].replace(/[^\d.-]/g, "");
-                        let sum = parseFloat(sumRaw) || 0;
+            rows.forEach(row => {
+              let columns = row.split(/\t|,|;/);
+              if (columns.length >= 2) {
+                let manager = columns[0].trim();
+                let sumRaw  = columns[1].replace(/[^\d.-]/g, "");
+                let sum     = parseFloat(sumRaw) || 0;
 
-                        totalSum += sum;
-                        formattedRows.push(`<b>${manager}</b>: ${sum.toLocaleString()}`);
-                    }
-                });
+                totalSum += sum;
+                formatted.push(`<b>${manager}</b>: ${sum.toLocaleString()}`);
+              }
+            });
 
-                let formattedData = `
-                    <div style="font-size: 1.5em; text-align: center; margin-bottom: 10px;">
-                        💰 <b>Общий тотал за месяц:</b> ${totalSum.toLocaleString()}
-                    </div>
-                    <div style="text-align: left; font-size: 1.2em; padding: 10px;">
-                        ${formattedRows.join("<br>")}
-                    </div>
-                `;
-                document.getElementById('reportResult').innerHTML = formattedData;
-                return;
-            }
-
-            // Если не reportId === 3, просто вставляем данные
+            // Собираем HTML с общей суммой и списком
+            let formattedData = `
+              <div style="font-size: 1.5em; text-align: center; margin-bottom: 10px;">
+                💰 <b>Общий тотал за месяц:</b> ${totalSum.toLocaleString()}
+              </div>
+              <div style="text-align: left; font-size: 1.2em; padding: 10px;">
+                ${formatted.join("<br>")}
+              </div>
+            `;
+            document.getElementById('reportResult').innerHTML = formattedData;
+          } else {
+            // Все остальные отчеты вставляем "как есть"
             document.getElementById('reportResult').innerHTML = data;
+          }
         })
         .catch(error => {
-            console.error("❌ Ошибка загрузки отчета:", error);
-            document.getElementById('reportResult').innerHTML =
-                `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
+          console.error("❌ Ошибка загрузки отчета:", error);
+          document.getElementById('reportResult').innerHTML =
+            `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
         });
-}
+    }
 
-
-
-            fetch(`${url}?reportId=${reportId}`)
-    .then(response => response.text()) 
-    .then(data => {
-        console.log("📢 Ответ от сервера для отчета", reportId, ":", data);
-
-        // Пробуем вставить данные "как есть" без замен
-        document.getElementById('reportResult').innerHTML = data;
-    })
-    .catch(error => {
-        document.getElementById('reportResult').innerHTML =
-          `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
-    });
-
-
-    /*
-      Улучшенный goBackToMenu():
-      - Плавное скрытие страницы отчета
-      - Возвращение в меню отчетов с анимацией
-    */
+    /* Возврат в меню отчетов */
     function goBackToMenu() {
       let reportDetailsPage = document.getElementById('reportDetailsPage');
-      let reportPage = document.getElementById('reportPage');
+      let reportPage        = document.getElementById('reportPage');
 
-      // Плавно скрываем страницу отчета
+      // Плавное скрытие деталей отчета
       reportDetailsPage.style.opacity = "0";
       setTimeout(() => {
-          reportDetailsPage.style.display = "none";
-
-          // Показываем меню отчетов
-          reportPage.style.display = "flex";
-          setTimeout(() => {
-              reportPage.style.opacity = "1";
-          }, 50); 
-      }, 300); // 300 мс перед скрытием
+        reportDetailsPage.style.display = "none";
+        // Возвращаем меню отчетов
+        reportPage.style.display = "flex";
+        setTimeout(() => {
+          reportPage.style.opacity = "1";
+        }, 50);
+      }, 300);
     }
   </script>
+
 </body>
 </html>
