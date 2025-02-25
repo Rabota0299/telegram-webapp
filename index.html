@@ -113,18 +113,25 @@
     }
     /* Блок для контента отчета с правильными переносами */
     .report-content {
-      color: white;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 15px;
-      max-width: 90%;
-      display: block;
-      border-radius: 10px;
-      /* Сохраняем исходные переносы строк */
-      white-space: pre-wrap;
-      /* Если нужно, чтобы длинные слова переносились, используем overflow-wrap */
-      overflow-wrap: break-word;
-      text-align: left;
-    }
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  max-width: 90%;
+  /* Вместо flex лучше использовать обычный блочный контейнер */
+  display: block;
+  border-radius: 10px;
+
+  /* Сохраняем исходные переносы строк */
+  white-space: pre-wrap;
+  /* Если нужно, чтобы длинные слова переносились, используем overflow-wrap */
+  overflow-wrap: break-word;
+  /* Убираем word-break, чтобы не ломать слова по произвольным местам */
+  /* word-break: break-word; */
+  
+  /* Можно оставить text-align:left; если нужно выравнивание по левому краю */
+  text-align: left;
+}
+
     #reportDetailsPage {
       background: black;
       display: none;
@@ -263,80 +270,140 @@
 
     /* URL для запросов */
     const apiUrl       = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
-    const apiUrlSpecial= "https://script.google.com/macros/s/AKfycbyMdo92GbzY9Xpp1gNeli49E9R4sLk0e6mcqYht2STo59SY2Brwl_HojPMTsmiqRP7R/exec";
+    const apiUrlSpecial= "https://script.google.com/macros/s/AKfycbzU1JIybh_cTSdmG66eekQMlIpJzo3dtIaw_evRqtMTe3kZJTvVA0TOdSo_kDvSLl2r/exec";
+
+    /**
+     * Очищаем лишние переносы/пробелы из HTML.
+     * Можно поднастроить под свои нужды.
+     */
+    function cleanupNewlines(html) {
+      return html
+        .replace(/\r/g, '')            // убираем \r
+        .replace(/\n\s*\n+/g, '\n')    // подряд идущие пустые строки -> одна
+        .replace(/^\s+|\s+$/g, '');    // trim по краям
+    }
+
+    /* 
+       Функция, «причесывающая» HTML (для 5-го отчёта):
+       - Ищем <span style="color:red/green">
+       - Если внутри число, округляем до 2 знаков
+    */
+    function formatReportHTML(htmlString) {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(htmlString, 'text/html');
+
+      doc.querySelectorAll('span[style*="color:red"], span[style*="color:green"]').forEach(span => {
+        let text = span.textContent.trim();
+        // Проверяем, начинается ли строка со знака + или -
+        let sign = '';
+        if (text[0] === '+' || text[0] === '-') {
+          sign = text[0];
+          text = text.substring(1);
+        }
+        // Пытаемся распарсить число
+        let num = parseFloat(text);
+        if (!isNaN(num)) {
+          // Округляем до 2 знаков, с разделителями тысяч (en-US)
+          let formatted = num.toLocaleString('en-US', { 
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2 
+          });
+          span.textContent = sign + formatted;
+        }
+      });
+
+      return doc.body.innerHTML;
+    }
 
     /* Открываем отчет по клику на кнопку */
     function openReport(reportId, reportTitle) {
       console.log("📢 Кнопка нажата, reportId:", reportId);
 
+      // Устанавливаем заголовок на странице отчета
       document.getElementById('reportTitle').innerHTML = reportTitle;
+      // «Заглушка», пока не пришел ответ
       document.getElementById('reportResult').innerHTML =
-        `<span style="color:yellow;">Добби ушел в архивы...<br>Скоро вернется с информацией!</span>`;
+        <span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>;
 
       let reportDetailsPage = document.getElementById('reportDetailsPage');
       let reportPage        = document.getElementById('reportPage');
 
-      // Плавное скрытие меню и показ деталей
+      // Плавно скрываем меню отчетов
       reportPage.style.opacity = "0";
       setTimeout(() => {
         reportPage.style.display = "none";
+        // Показываем страницу деталей
         reportDetailsPage.style.display = "flex";
         setTimeout(() => {
           reportDetailsPage.style.opacity = "1";
         }, 50);
       }, 300);
 
-      // Выбираем URL в зависимости от отчёта
+      // Выбираем URL
       let url = (reportId === 5) ? apiUrlSpecial : apiUrl;
       console.log("🌍 Отправка запроса на:", url);
 
-      fetch(`${url}?reportId=${reportId}`)
-        .then(response => response.json())
+      // Отправляем запрос
+      fetch(${url}?reportId=${reportId})
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(Ошибка сервера: ${response.status});
+          }
+          return response.text();
+        })
         .then(data => {
           console.log("📢 Ответ от сервера:", data);
 
-          // Проверяем наличие ошибки
-          if (data.error) {
-            throw new Error(data.error);
+          if (!data || data.trim() === "") {
+            throw new Error("Получены пустые данные");
           }
 
-          // ----------------
-          // Логика вывода:
-          // ----------------
-          if (reportId === 5) {
-            // (5) Сервер возвращает объект: { expense: "...HTML...", income: "...HTML..." }
-            let expenseHTML = data.expense || "";
-            let incomeHTML  = data.income  || "";
-            // Выводим эти поля как есть
-            let formattedData = `
+          // Если это «Тотал по месяцу» (reportId === 3)
+          if (reportId === 3) {
+            let rows      = data.trim().split(/\r?\n/);
+            let totalSum  = 0;
+            let formatted = [];
+
+            rows.forEach(row => {
+              let columns = row.split(/\t|,|;/);
+              if (columns.length >= 2) {
+                let manager = columns[0].trim();
+                let sumRaw  = columns[1].replace(/[^\d.-]/g, "");
+                let sum     = parseFloat(sumRaw) || 0;
+
+                totalSum += sum;
+                formatted.push(<b>${manager}</b>: ${sum.toLocaleString()});
+              }
+            });
+
+            let formattedData = 
               <div style="font-size: 1.5em; text-align: center; margin-bottom: 10px;">
-                ${expenseHTML}<br><br>
-                ${incomeHTML}
+                💰 <b>Общий тотал за месяц:</b> ${totalSum.toLocaleString()}
               </div>
-            `;
+              <div style="text-align: left; font-size: 1.2em; padding: 10px;">
+                ${formatted.join("<br>")}
+              </div>
+            ;
             document.getElementById('reportResult').innerHTML = formattedData;
 
+          } else if (reportId === 5) {
+            // Сначала «причёсываем» HTML (округляем числа)
+            let fixedHTML = formatReportHTML(data);
+            // Затем убираем лишние переносы
+            fixedHTML = cleanupNewlines(fixedHTML);
+
+            document.getElementById('reportResult').innerHTML = fixedHTML;
           } else {
-            // (1..4) Может прийти и объект, и просто строка
-            // Пример: { "html":"<div>что-то</div>" } или "<div>готовая строка</div>"
-            if (typeof data === 'object') {
-              // Пытаемся взять поле `html`; если его нет — показываем сам объект в JSON-формате
-              if (data.html) {
-                document.getElementById('reportResult').innerHTML = data.html;
-              } else {
-                // На всякий случай, чтобы не было [object Object], выведем строку JSON
-                document.getElementById('reportResult').innerHTML = JSON.stringify(data, null, 2);
-              }
-            } else {
-              // Если data — это строка, сразу вставляем
-              document.getElementById('reportResult').innerHTML = data;
-            }
+            // Для остальных отчетов просто вставляем
+            // (но тоже можем почистить переносы, если нужно)
+            data = cleanupNewlines(data);
+            document.getElementById('reportResult').innerHTML = data;
           }
         })
         .catch(error => {
           console.error("❌ Ошибка загрузки отчета:", error);
           document.getElementById('reportResult').innerHTML =
-            `<span style="color:red;">Ой, что-то пошло не так! Попробуй позже.</span>`;
+            <span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>;
         });
     }
 
