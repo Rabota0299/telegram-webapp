@@ -113,21 +113,25 @@
     }
     /* Блок для контента отчета с правильными переносами */
     .report-content {
-      color: white;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 15px;
-      max-width: 90%;
-      flex-grow: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-radius: 10px;
-      
-      /* Ключевые стили для нормальных переносов */
-      white-space: pre-wrap;
-      word-break: break-word;
-      text-align: left;
-    }
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  max-width: 90%;
+  /* Вместо flex лучше использовать обычный блочный контейнер */
+  display: block;
+  border-radius: 10px;
+
+  /* Сохраняем исходные переносы строк */
+  white-space: pre-wrap;
+  /* Если нужно, чтобы длинные слова переносились, используем overflow-wrap */
+  overflow-wrap: break-word;
+  /* Убираем word-break, чтобы не ломать слова по произвольным местам */
+  /* word-break: break-word; */
+  
+  /* Можно оставить text-align:left; если нужно выравнивание по левому краю */
+  text-align: left;
+}
+
     #reportDetailsPage {
       background: black;
       display: none;
