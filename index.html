@@ -349,17 +349,16 @@
 
       if (reportId === 5) {
   let formattedData = `
-    <div style="font-size: 1.3em; text-align: center; font-weight: bold;">
-      <span style="color:${data.expense.color}; display: block; margin-bottom: 5px;">
-        ${data.expense.label}: ${data.expense.value}
-      </span>
-      <span style="color:${data.income.color}; display: block; margin-top: 5px;">
-        ${data.income.label}: ${data.income.value}
-      </span>
-    </div>
+    <p style="font-size: 1.1em; color:${data.expense.color}; font-weight: bold;">
+      ${data.expense.label}: ${data.expense.value}
+    </p>
+    <p style="font-size: 1.1em; color:${data.income.color}; font-weight: bold;">
+      ${data.income.label}: ${data.income.value}
+    </p>
   `;
   document.getElementById('reportResult').innerHTML = formattedData;
 }
+
 
 
 
