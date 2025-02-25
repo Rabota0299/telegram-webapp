@@ -31,10 +31,7 @@
   transition-delay: 0s;
 }
 
-    /* Когда у элемента есть "display: flex" через inline-стиль, включаем opacity */
-    .page[classList.add('visible')] {
-      opacity: 1;
-    }
+    
     #startPage {
       display: flex;
       background: #000;
@@ -218,7 +215,7 @@
       // Остальные скрыты
       document.getElementById('pinPage').classList.remove('visible');
       document.getElementById('reportPage').classList.remove('visible');
-      document.getElementById('reportDetailsPage').classList.remove('visible')';
+      document.getElementById('reportDetailsPage').classList.remove('visible');
     }
 
     /* Переход к вводу PIN */
@@ -264,7 +261,7 @@
       // Задаем свой пин-код
       if (enteredPIN === "2402") {
         document.getElementById('pinPage').classList.remove('visible');
-        document.getElementById('reportPage').classList.add('visible')';
+        document.getElementById('reportPage').classList.add('visible');
       } else {
         alert("Неверный PIN!");
         // Сброс значений
@@ -352,7 +349,7 @@
       console.log("🌍 Отправка запроса на:", url);
 
       // Отправляем запрос
-      fetch(${url}?reportId=${reportId})
+      fetch(`${url}?reportId=${reportId}`)
         .then(response => {
           if (!response.ok) {
             throw new Error(Ошибка сервера: ${response.status});
