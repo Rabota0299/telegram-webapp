@@ -355,22 +355,19 @@
 }
 
 
-              // Обычная обработка для остальных отчетов
-              let cleanedData = data
-  .replace(/\bundefined\b/g, "") // убираем undefined
-  .replace(/🔄 <b>Разница со вчера<\/b>:/, '🔄 <b>Разница со вчера</b>: ')
-  // + если хочешь оставлять красную/зелёную разницу с пробелом
-  .replace(/(<span style='color:red;'>[^<]+<\/span>)(<span style='color:green;'>[^<]+<\/span>)/,
-           "$1&nbsp;/&nbsp;$2");
+            fetch(`${url}?reportId=${reportId}`)
+    .then(response => response.text()) 
+    .then(data => {
+        console.log("📢 Ответ от сервера для отчета", reportId, ":", data);
 
-// Вставляем "как есть" без trim()
-document.getElementById('reportResult').innerHTML = data;
-          })
-          .catch(error => {
-              document.getElementById('reportResult').innerHTML =
-                `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
-          });
-    }
+        // Пробуем вставить данные "как есть" без замен
+        document.getElementById('reportResult').innerHTML = data;
+    })
+    .catch(error => {
+        document.getElementById('reportResult').innerHTML =
+          `<span style="color:red;">Добби уебали по пути,<br>Перезагрузи шарманку и нажми заново</span>`;
+    });
+
 
     /*
       Улучшенный goBackToMenu():
