@@ -123,7 +123,6 @@
       white-space: pre-wrap;
       /* Если нужно, чтобы длинные слова переносились, используем overflow-wrap */
       overflow-wrap: break-word;
-      /* Убираем word-break, чтобы не ломать слова по произвольным местам */
       text-align: left;
     }
     #reportDetailsPage {
@@ -266,55 +265,13 @@
     const apiUrl       = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
     const apiUrlSpecial= "https://script.google.com/macros/s/AKfycbyMdo92GbzY9Xpp1gNeli49E9R4sLk0e6mcqYht2STo59SY2Brwl_HojPMTsmiqRP7R/exec";
 
-    /**
-     * Очищаем лишние переносы/пробелы из HTML (при желании используйте).
-     */
-    function cleanupNewlines(html) {
-      return html
-        .replace(/\r/g, '')            // убираем \r
-        .replace(/\n\s*\n+/g, '\n')    // подряд идущие пустые строки -> одна
-        .replace(/^\s+|\s+$/g, '');    // trim по краям
-    }
-
-    /**
-     * Пример функции, «причесывающей» HTML:
-     * Ищем span style="color:red" / "color:green", округляем числа и т.д.
-     * Можно адаптировать, если нужно именно так работать с HTML.
-     */
-    function formatReportHTML(htmlString) {
-      let parser = new DOMParser();
-      let doc = parser.parseFromString(htmlString, 'text/html');
-
-      doc.querySelectorAll('span[style*="color:red"], span[style*="color:green"]').forEach(span => {
-        let text = span.textContent.trim();
-        // Проверяем, начинается ли строка со знака + или -
-        let sign = '';
-        if (text[0] === '+' || text[0] === '-') {
-          sign = text[0];
-          text = text.substring(1);
-        }
-        // Пытаемся распарсить число
-        let num = parseFloat(text);
-        if (!isNaN(num)) {
-          // Округляем до 2 знаков, с разделителями тысяч (en-US)
-          let formatted = num.toLocaleString('en-US', { 
-            minimumFractionDigits: 2, 
-            maximumFractionDigits: 2 
-          });
-          span.textContent = sign + formatted;
-        }
-      });
-
-      return doc.body.innerHTML;
-    }
-
     /* Открываем отчет по клику на кнопку */
     function openReport(reportId, reportTitle) {
       console.log("📢 Кнопка нажата, reportId:", reportId);
 
       document.getElementById('reportTitle').innerHTML = reportTitle;
       document.getElementById('reportResult').innerHTML =
-        `<span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>`;
+        `<span style="color:yellow;">Добби ушел в архивы...<br>Скоро вернется с информацией!</span>`;
 
       let reportDetailsPage = document.getElementById('reportDetailsPage');
       let reportPage        = document.getElementById('reportPage');
@@ -338,45 +295,48 @@
         .then(data => {
           console.log("📢 Ответ от сервера:", data);
 
-          // Если сервер отдал ошибку
+          // Проверяем наличие ошибки
           if (data.error) {
             throw new Error(data.error);
           }
 
-          // --- Собственно, логика вывода отчёта ---
+          // ----------------
+          // Логика вывода:
+          // ----------------
           if (reportId === 5) {
-            /*
-              Сервер возвращает такой JSON:
-              {
-                "expense": "<span style='color:red;'><b>РАСХОД:</b> 300833.14$</span>",
-                "income":  "<span style='color:green;'><b>ДОХОД:</b> 250498.00$</span>"
-              }
-              Мы просто берём эти HTML-фрагменты и вставляем.
-            */
+            // (5) Сервер возвращает объект: { expense: "...HTML...", income: "...HTML..." }
             let expenseHTML = data.expense || "";
             let incomeHTML  = data.income  || "";
-
-            // Можно, при желании, пропустить их через cleanupNewlines / formatReportHTML
-            // let combined = formatReportHTML(expenseHTML) + "<br>" + formatReportHTML(incomeHTML);
-            // Но если не нужно, вставляем напрямую:
-
+            // Выводим эти поля как есть
             let formattedData = `
               <div style="font-size: 1.5em; text-align: center; margin-bottom: 10px;">
-                ${expenseHTML}<br>
+                ${expenseHTML}<br><br>
                 ${incomeHTML}
               </div>
             `;
             document.getElementById('reportResult').innerHTML = formattedData;
 
           } else {
-            // Для остальных отчётов приходит обычная HTML-строка (или что-то ещё)
-            document.getElementById('reportResult').innerHTML = data;
+            // (1..4) Может прийти и объект, и просто строка
+            // Пример: { "html":"<div>что-то</div>" } или "<div>готовая строка</div>"
+            if (typeof data === 'object') {
+              // Пытаемся взять поле `html`; если его нет — показываем сам объект в JSON-формате
+              if (data.html) {
+                document.getElementById('reportResult').innerHTML = data.html;
+              } else {
+                // На всякий случай, чтобы не было [object Object], выведем строку JSON
+                document.getElementById('reportResult').innerHTML = JSON.stringify(data, null, 2);
+              }
+            } else {
+              // Если data — это строка, сразу вставляем
+              document.getElementById('reportResult').innerHTML = data;
+            }
           }
         })
         .catch(error => {
           console.error("❌ Ошибка загрузки отчета:", error);
           document.getElementById('reportResult').innerHTML =
-            `<span style="color:red;">Ошибка загрузки данных, попробуй позже.</span>`;
+            `<span style="color:red;">Ой, что-то пошло не так! Попробуй позже.</span>`;
         });
     }
 
