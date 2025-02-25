@@ -111,18 +111,22 @@
       word-wrap: break-word;
       max-width: 90%;
     }
+    /* Исправленный блок для контента отчета */
     .report-content {
       color: white;
       background: rgba(255, 255, 255, 0.1);
       padding: 15px;
-      max-width: 80%;
+      max-width: 90%;
       flex-grow: 1;
       display: flex;
       justify-content: center;
       align-items: center;
-      text-align: center;
+      /* Можно выставить text-align: center, но для таблиц чаще удобнее left */
+      text-align: left;
       border-radius: 10px;
-      white-space: pre-wrap;
+      /* Позволяем переносить строки и большие числа */
+      white-space: normal;
+      word-break: break-word; 
     }
     #reportDetailsPage {
       background: black;
@@ -269,6 +273,36 @@
     const apiUrl       = "https://script.google.com/macros/s/AKfycbzcJJ4wgWpkAH4r1VmqMwF_705Ei4RyJVwalKz0Irb7b5pfz0U4CHq8wYEYlIB8uoR_/exec";
     const apiUrlSpecial= "https://script.google.com/macros/s/AKfycbwQda6ilSCTIWxKEgLfMR6LFvf1842iWJGm6wIfXm6Fou9GrJcvVFYl_Rh3p3P8RYVi/exec";
 
+    /* 
+       Функция, «причесывающая» HTML в 5-м отчёте:
+       - Ищем <span style="color:red"> и <span style="color:green">
+       - Если внутри число, округляем до 2 знаков
+    */
+    function formatReportHTML(htmlString) {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(htmlString, 'text/html');
+
+      // Ищем span, где style содержит 'color:red' или 'color:green'
+      doc.querySelectorAll('span[style*="color:red"], span[style*="color:green"]').forEach(span => {
+        let text = span.textContent.trim();
+        // Проверяем, начинается ли строка со знака + или -
+        let sign = '';
+        if (text[0] === '+' || text[0] === '-') {
+          sign = text[0];
+          text = text.substring(1);
+        }
+        // Пытаемся распарсить число
+        let num = parseFloat(text);
+        if (!isNaN(num)) {
+          // Округляем до 2 знаков, с разделителями тысяч (en-US)
+          let formatted = num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          span.textContent = sign + formatted;
+        }
+      });
+
+      return doc.body.innerHTML;
+    }
+
     /* Открываем отчет по клику на кнопку */
     function openReport(reportId, reportTitle) {
       console.log("📢 Кнопка нажата, reportId:", reportId);
@@ -340,6 +374,11 @@
               </div>
             `;
             document.getElementById('reportResult').innerHTML = formattedData;
+
+          } else if (reportId === 5) {
+            // Для 5-го отчета подправляем длинные числа
+            let fixedHTML = formatReportHTML(data);
+            document.getElementById('reportResult').innerHTML = fixedHTML;
           } else {
             // Все остальные отчеты вставляем "как есть"
             document.getElementById('reportResult').innerHTML = data;
