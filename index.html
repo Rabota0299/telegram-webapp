@@ -90,7 +90,7 @@
     #reportPage {
       background: url('images/KartaMaroderovMENU.png') no-repeat center center fixed;
       background-size: cover;
-      display: none; 
+      visibility: hidden;
       flex-direction: column;
       justify-content: center;
       align-items: center;
@@ -139,7 +139,7 @@
 
     #reportDetailsPage {
       background: black;
-      display: none;
+      visibility: hidden;
       flex-direction: column;
       justify-content: center;
       align-items: center;
@@ -328,7 +328,7 @@
       document.getElementById('reportTitle').innerHTML = reportTitle;
       // «Заглушка», пока не пришел ответ
       document.getElementById('reportResult').innerHTML =
-        <span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>;
+  '<span style="color:yellow;">Добби отправлен в таблицы<br>Скоро вернется с информацией...</span>';
 
       let reportDetailsPage = document.getElementById('reportDetailsPage');
       let reportPage        = document.getElementById('reportPage');
@@ -377,7 +377,7 @@
                 let sum     = parseFloat(sumRaw) || 0;
 
                 totalSum += sum;
-                formatted.push(<b>${manager}</b>: ${sum.toLocaleString()});
+                formatted.push(`<b>${manager}</b>: ${sum.toLocaleString()}`);
               }
             });
 
